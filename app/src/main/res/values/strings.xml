@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Simply Weather</string>
+    <string name="forecast"><big><b>Forecast: </b></big></string>
+    <string name="enter_location"><big><b>Forecast location</b></big></string>
+    <string name="about">About</string>
+    <!-- <string name="help">Help</string>  -->
+    <string name="add">Add location</string>
+    <string name="delete">Delete location</string>
+    <string name="dialog.title">Enter new location</string>
+    <string name="dialog.message">City, State or ZIP code</string>
+    <string name="dialog.confirm_delete_title">Delete location?</string>
+    <string name="dialog.confirm_delete_message">Do you wish to remove the current location?</string>
+    
+    
+    <string name="ok">OK</string>
+    <string name="cancel">cancel</string>
+    <string name="location_prompt">location</string>
+</resources>

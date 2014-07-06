@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/about"
+          android:icon="@drawable/about3"
+          android:title="@string/about" />
+    <item android:id="@+id/add"
+          android:icon="@drawable/add_48x48"
+          android:title="@string/add" />
+    <item android:id="@+id/delete"
+          android:icon="@drawable/delete_48x48"
+          android:title="@string/delete" />
+    <!--  item android:id="@+id/help"
+          android:icon="@drawable/help2"
+          android:title="@string/help" />
+          -->
+          
+          <!-- Icons used under Creative Commons license:
+          Attribution-NoDerivs 3.0 Unported (CC BY-ND 3.0) 
+          http://creativecommons.org/licenses/by-nd/3.0/
+          
+          Icons by http://www.visualpharm.com/
+          http://www.visualpharm.com/must_have_icon_set/
+           -->
+</menu>

@@ -1,0 +1,22 @@
+apply plugin: 'android'
+android {
+    compileSdkVersion 9
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "net.joncaplan"
+        minSdkVersion 9
+        targetSdkVersion 9
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile files('libs/commons-net-3.3.jar')
+}

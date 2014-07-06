@@ -1,0 +1,304 @@
+Project motivation: Can't easily get reasonable weather forecast on phone.
+Best forecast seems to come from noaa.gov and is available in text format.
+Getting this requires several steps on Android phone.
+
+Project vision: Small app which displays forecast from NOAA for current location as text.
+
+User interface:
+	- text entry box for city, state or ZIP code
+	- a refresh button
+	- a text box for results
+
+Back end:
+	- Accept user input and request submit to NOAA.gov site.
+	- Receive and parse response.
+		- check for error message 
+		- display forecast or error message
+
+	
+Future versions: 
+	1.01 Retains last location (http://developer.android.com/guide/topics/data/data-storage.html)
+	1.1  Adds option to get location from GPS/WiFi.
+	2.0  Adds worldwide forecasts.
+
+
+---------------------------------------------------
+Implementation notes
+	NOAA site is: http://forecast.weather.gov/zipcity.php
+	Form is submitted by:
+		<form method="POST" action="http://forecast.weather.gov/zipcity.php">
+		<INPUT TYPE="submit" NAME="Go2" VALUE="Go">
+		</form>
+		
+	Parsing HTML results page
+	results start after:
+		<img alt="Detailed text forecast" src="/images/wtf/fcst.jpg">
+	results end just before next: 
+		</td>	
+	I should be able to do some simple string searching to cut down the input to the this section.
+	I should check if I can do HTML display in a text element. That would nicely preserve the spacing and emphasis and save editing out tags.
+
+TODO:
+	User Interaction
+		Set up XML UI - DONE
+		Set value of TextView - DONE
+		Get event when button pressed - DONE
+		Get value from EditText box - DONE
+	Network Interaction
+		Fetch page without location - DONE
+		Fetch page with location in POST - DONE
+		Fetch XML file - DONE
+	Parsing
+		parse XML file and print results. - DONE!
+		fix XML parsing - DONE
+		add error handling 
+	Persistence - DONE
+		 Record location - DONE
+		 Recall location after 
+		 	- rotation - DONE
+		 	- restart - DONE
+	 	 Record XML file - DONE
+		 Recall XML file after rotation/restart - DONE
+	Pretty 
+		Add icon (48x48 icon.png) - DONE
+		Change name to "Simply Weather" - DONE
+		Make fonts readable - DONE
+		Add About box - DONE
+	Test
+		Network errors - DONE
+		Different times - DONE
+		Different devices
+			Virtual devices - DONE
+			Other phones 
+	Bugs 
+		1. XML parse error if no text or invalid address in text box and arrow pressed. "unterminated entry ref" - FIXED. (Now presents proper error message.)
+		2. Error if no network present. - FIXED. (Now presents proper error message.)
+		3. Alaska forecasts fail with XML parse error: expected: 'd' actual: 'D'. FIXED. Gives message about forecast not available for Alaska.
+	Post - DONE
+		
+	Version 1.01 improvements
+		Detect AK, Alaska or ZIP codes beginning 995-999 and give special Alaska warning. - DONE	
+		Add time since last update - DONE	
+		Parse state names so that user doesn't have to enter a comma. - DONE
+		Remove comma bug message - DONE
+		Clarify error messages - DONE
+
+		Bugs
+			4. Load of forecast can cause delay in showing UI. - RESOLVED (Doesn't auto-load forecast unless tooMuchTimeHasPassed, still could be improved.)
+			5. Time since last update not updated, unless screen rotated.  - FIXED
+			6. Error message not presented for invalid location. - FIXED
+			
+	Version 1.1 improvements
+		Improved network unavailable messaging: Limits appearance frequency unless user presses refresh button.
+		Added colored titles clarity.
+		Nice new refresh button.
+		
+	Version 1.1.1
+		Added medium and small application icons
+		Ensure previous forecast appears instantly before checking for up date. DONE
+		Added support for locations in Alaska.
+		Bugs
+			7. UI Freezes for user initiated forecast update. (Refresh button stays green for whole update period, including network timeout.) - FIXED 
+			8. Forecast is updated in background, but updated forecast does not appear in UI until user-initiated refresh (rotate screen, switch app, hide keyboard, etc.). FIXED
+			9. When app is re-launched with non-expired forecast forecast HTML view is black, until user-initiated refresh. FIXED
+			10. Does not show saved Alaska forecast, just error message in HTML panel. FIXED
+			11. Crash on forecast refresh when there is no network access. FIXED
+			12. Forecast truncated for Alaska when town has space. FIXED
+		
+		Version 1.2
+		Support multiple locations
+			Phase 1: Store forecasts, so forecast is available even if no network access is available, forecast still works for recently updated locations. - DONE
+			Phase 2: Build a UI for multiple locations - DONE
+				Enable swipe - DONE
+				Add "New Location" button - DONE
+				Add "Delete Location" button - DONE
+			BUGS:
+				13. HTML display area only about 8 pixels high on app launch. - FIXED
+				14. Forecast and location forgotten when phone is rotated. - FIXED
+				15. Location forgotten when app switched out of foreground and back. - FIXED 
+				16. Time since update incorrect at launch or on rotation. Shows 15211 days ago, or 41.6 years, the beginning of Unix epoch.
+				     Time of last forecast returned from database incorrect. Returns numbers around -1012597000. FIXED (Converted forecast save time from ms to seconds. Avoids likely type conversion error in database.)
+				17. Saved forecast not displayed when network is down and switching to new saved location. FIXED
+
+				18. Error when weather service forecast not available: "XML parse error -jsc" "expected:'D' actual 'd' (position:unknown @1:3 in java.io.StringReader@444f61c0)"
+						Weather.gov shows forecast, but includes message: "The "Forecast At A Glance" icons, hourly weather graph feature, Spanish version, and temperatures in Celsius are temporarily not available for this location for technical reasons. We apologize for any inconvenience."
+				19. Database sometimes corrupted. (Infrequently. Cause unknown. Copy of corrupt database located on phone at /data/data/net.joncaplan/databases/) FIXED. (Not database issue. Off by one in preferred location.)
+				20. Crashes with corrupt database. Always. Deleting database recovers application. FIXED. (See #19)
+				
+			    21. Forecast switches to forecast for location #1 when rotating phone or returning to app. - FIXED
+			    22. Refreshing forecast is unreliable. - FIXED
+			    23. Refreshing forecast gives no feedback on progress. - DEFERRED
+			    24. Forecast for old location shows while new location forecast is being loaded. Fix by making location selection separate from update. - FIXED
+			    25. Added location doesn't appear in swipe rotation until app restarted. - FIXED
+			    26. Current swipe location appears twice at app launch, but not later. - FIXED
+			    27. Switching locations during update can cause update to be applied to wrong location. - FIXED
+			    28. App lacks reasonable interface for no locations in database. (First launch or all locations deleted.) FIXED
+			    
+	    Version 1.3
+	    	Include ad support for free version                             - DONE
+	    	Include current temperature, humidity, wind speed and direction - DONE
+			Add conditions icons                                            - DONE
+	    	
+	    	BUGS
+	    		29. Sometimes forecasts don't auto-update when over 30 minutes old. CLOSED, NOT REPRODUCIBLE (See bug 32)
+	    				Log says "Getting new forecast for Augusta ME" and "Default buffer size used in BufferedReder constructor. It would be better to be explicit if an 8k-char buffer is required." and then nothing but GC messages from dalvik.
+	    				Note: This appears to be the result of having two copies of the same location. Re-test when bug 32 is fixed.
+	    		30. Using ViewFlipper to switch forecasts triggers two "Getting new forecast for ..." log messages when forecast is over 30 minutes old. FIXED (onItemListener called when flipping views, which also check for refresh.)
+	    				Note: No user impact other than data usage.
+	    				Note: Does not occur with refresh button or from selecting location with drop-down menu (spinner).
+	    		31. Yigo, Guam forecast returns error. This error is similar to what happens when NOAA server is down, so is worth handling. See bug 18. DEFERRED.
+	    		32. User able to create more than one copy of location. CLOSED, NOT REPRODUCIBLE
+	    				Solution: Compare request to location strings in database and on match simply switch to that location. Could even strip out comma before comparing.
+	    				Note: Strings already compared. Not sure how I got duplicate location. Closing until I can reproduce. 
+				33. Forecast not loading on 4.0.3 emulator. FIXED!! (Disabled automatic HTTP redirect.)
+						Note: Internet access is broken on this emulator, but not on the Motorola 2.3.3 Bionic emulator. See if I can find a working 4.x emulator. 
+							Also occurs on 3.x emulator with internet access working (tested with browser).
+							Maybe this is depending on how the program id's itself for the HTTP request. Perhaps user agent is different. Nope. Faking user agent string changes nothing.
+							Wireshark captures reveal that "&FcastType=dwml" is not getting appended to the request in the failed cases.
+			    34. Multiple requests for forecast update. Occurs on app startup. May be associated with app crashing. - DEFERRED
+				35. Crash at startup during background update: java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() - BANDAGED and DEFERRED real fix. (Commented out offending code.) May be caused by bug 34.
+								net.joncaplan.SimplyWeather.showToastMessage(SimplyWeather.java:999)
+								net.joncaplan.SimplyWeather.getForecast(SimplyWeather.java:353)
+								net.joncaplan.SimplyWeather$4.doInBackground(SimplyWeather.java:751)
+								net.joncaplan.SimplyWeather$4.doInBackground(SimplyWeather.java:1)
+								android.os.AsyncTask$2.call(AsyncTask.java:185)
+				36. Alaska forecasts don't work on 4.0. (They do work on 2.1.) FIXED. (Same redirect problem as before, along with different header numbering.)
+					
+		Version 1.3.1
+			Fix bug for San Francisco area forecasts. DONE 
+				
+			Bugs
+				37. Error when getting forecast for some SF Bay area locations. Forecast pane displays: "Error is: Cause is: null Stack trace" FIXED.
+					NOAA was giving bad values when it had no data. Also put try/catch blocks around most XML processing code.
+					Skip printing local conditions on XML parse failure.
+				38. Multiple copies of some locations appear. Cause unknown. Must investigate. DEFERRED. Note: Could be due to multiple updates happening at once. Observer to see if this still occurs.
+				
+		Version 1.3.5
+				Add temperature and wind speed table - DONE
+					Retrieve data from NOAA - DONE
+					Display the data        - DONE
+				Add Hazard Data
+					Load and parse hazard data - DONE
+					Display hazard data - IN PROGRESS
+					
+			Bugs
+				39. Temperature table sometimes doesn't update. Should be FIXED. Test.
+				40. Temperature table sometimes displays wrong location. Switching to main panel and back clears this up. FIXED. (Updated hourly view even when not in front.)
+				41. SAXException parsing HourlyXML with Alaska locations. FIXED. (Don't try for Alaska.)
+				
+		Version 1.3.6
+				Add call data dump for XML parse error. - IN PROGRESS
+				Add space between daily forecasts to allow room for larger images from weather service. - DONE
+				Add top US 25 cities - DONE
+
+		Version 1.3.7 (Released hours after 1.3.6. No users down loaded it.)
+				42. Crash when entering place names. FIXED (by removing top cities and nicknames feature.)
+				
+		version 1.3.8
+				re-enabled top cities and nicknames feature. (FIXED Bug 42: Array out of bounds on nicknames - used array length for cities.)
+				Added info about accessing temperature to about box. 
+				
+				Bugs
+					44. Fails to update forecast following network access loss.
+					45. Alaska forecasts broken due to change on weather service side.
+					
+		version 1.3.9 (android:versionCode 8)
+				Fixed temperature and wind speed chart.
+				
+				Bugs
+					46 Hourly data chart has ceased functioning. Error "Point is not on an NDFD grid. Point with latitude 42.5... Longitude = 0 ..."
+							Why is longitude 0? I had missing "&" separating items in URL query string, invalidating my longitude. FIXED
+					47.Getting null pointer exception on hazard data. FIXED
+					
+		version 1.3.10
+				Bugs
+					49. Deleting location sometimes fails. This may cause duplication of locations at the end of the list. First test whether there
+						are fewer entries in the table after a deletion attempt,
+				
+					
+		Version 1.4
+						
+			Features
+				Add temperature and wind speed plots
+				Reduce traffic by storing lat and lon in database.
+				
+			Deferred Bugs
+				23. Refreshing forecast gives no feedback on progress
+				31. Yigo, Guam forecast returns error.
+					The URL seems to be for the whole island. http://forecast.weather.gov/MapClick.php?zoneid=GUZ001&FcstType=dwml and returns a HTML page.
+					clicking on the map gives URL of
+					http://forecast.weather.gov/MapClick.php?lat=13.54721129739022&lon=144.8382568359375&site=gum&unit=0&lg=en
+					converting this to 
+					http://forecast.weather.gov/MapClick.php?lat=13.54721129739022&lon=144.8382568359375&site=gum&unit=0&lg=en&FcstType=dwml
+					http://forecast.weather.gov/MapClick.php?lat=13.54721129739022&lon=144.8382568359375&FcstType=dwml
+					both give a XML pages.
+					Two thoughts
+					1) I should be able to handle the error gracefully.
+					2) Can defer until I have the new lookup system for locations.
+				34. Multiple requests for forecast update. Occurs on app startup. May be associated with app crashing.
+				35. Apply correct fix to 1) toast messages coming from background thread. 2) Database error on startup (if (locationID < -1)).
+				38. Multiple copies of some locations appear. (This might be corrected by killing and restarting app - it could be an in-memory issue, not db issue.)
+				43. Error when loading Somerville forecast, but not other locations. (May be related to bug 31.) Occurs Sometimes.
+					Error is: expected: 'D' actual: 'd' (position:unknown @1:3 in Java.io.StringReader@446c5378)
+					Cause is: null
+					Stack trace [ LJavaLang.Lang.StackTraceElement;@4470d228
+					03-15 18:15:39.194: I/SimplyWeather forecast(30123): URL is: http://forecast.weather.gov/MapClick.php?CityName=Somerville&state=MA&site=BOX&textField1=42.3903&textField2=-71.1018&e=0&FcstType=dwml
+					URL is well-formed and returns and XML page, which appears normal.
+					Error is thrown by parsePage()
+				
+						
+						
+		Bugs appearing in released version
+			48. Unknown location for "Temple Texas" and "Dallas texas", but not for "Temple, texas", "Temple tx" or "Bangor Maine"
+				Also error for "provincetown massachusetts", but not for "provincetown, massachusetts" or "waltham massachusetts" 
+				So far the rule seems to be make sure you use a comma or abbreviation for locations in texas.  
+		----
+			50. Hourly forecast data sometimes not for correct location. (Solution: Pull hourly data along with regular forecast data.)
+			
+			51. Forecast for wrong location appears when changing location during update. 
+				Steps: 1. Hit refresh button (Location 1). 2. Select location far away with clearly different weather (Location 2). 
+				Result: Forecast for Location 1 appears, but dropdown indicates current location as Location 2. 
+				Note: Switching to another location and then back to Location 2 causes correct forecast to appear.
+				Note: Switching to temperature data and back does not clear the incorrect forecast.
+				Proposed solutions: 
+					When getForecast returns, it should save forecast in database, then update from database, for whatever location is currently selected.
+						A simple screen refresh following database write could do this.
+					refreshScreen should know what the current location is.
+					Have dirty flag for location, which forces update from database when changed.
+					Lock dropdown from changing locations while waiting for update (No, can cause bad user experience.)
+				 			 
+		
+	Future Plans
+		Return the location from the weather service XML file. (Maybe only if they entered "city, state", rather than ZIP). This ensures that the user knows when the weather service guessed 
+			wrong on their location. 
+		Severe weather alerts. - DONE
+		Implement REST using info at http://www.weather.gov/forecasts/xml/rest.php. It allows the XML file to be customized to show all kinds of weather data!!
+		
+To release a new version		
+	To sign:   "c:\Program Files\Java\jdk1.6.0_24\bin\jarsigner.exe"  -verbose -keystore my-release-key.keystore SimplyWeather.apk alias_name
+	To verify: "c:\Program Files\Java\jdk1.6.0_24\bin\jarsigner.exe"  -verify SimplyWeather.apk
+	To align:  "C:\Program Files\Android\android-sdk-windows\tools\zipalign.exe" -v 4 SimplyWeather_unaligned.apk SimplyWeather.apk
+	OR
+	In Eclipse File/Export/Android App/Next ... (password is standard!)
+	...
+	Profit.
+	
+Switching build between free and paid.
+	0. Check permissions. Does ad version require location?
+	1. Update ./res/main.xml file. Comment or uncomment  <com.google.ads.AdView ... /> near the end of the file.
+	2. Update useAds boolean.
+	3. Google requires a different package
+		In the first two lines of SimplyWeather.java, switch which line is commented out (package net.joncaplan.simply_weather_free; or package net.joncaplan;)
+		Respond the the error generated by lint in tooltip to change package.
+		Add: import net.joncaplan.ForecastManager;
+			(Also had to make constructors and SetForecast, public.)
+		In Forecast.java
+			import net.joncaplan.simply_weather_free.SimplyWeather; (May need to switch back for regular version.)
+			
+				I may be able to use "rename"
+	
+-----------
+
+Old new features text. (Too long to fit in 500 char limit.)
+Version 1.1 Added highlighting to forecast periods. Included time of last forecast update.
+Version 1.2 Added support for multiple locations. Automatically updates forecasts over 30 minutes old. Added support for Alaska.

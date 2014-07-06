@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/mainLayout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" >
+    <ViewFlipper android:id="@+id/flipper" android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1"> <!-- Alternative to using weights is here: http://googleadsdeveloper.blogspot.com/2011/12/incorporating-android-admob-ads-into.html  May need to be tweaked so areas don't overlap.-->
+        <ScrollView android:id="@+id/scrollview0" android:layout_width="fill_parent" android:layout_height="fill_parent" >
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical" >
+                <TextView android:id="@+id/textView7" android:layout_width="fill_parent" android:layout_height="10dp" android:text="" ></TextView>
+                <TextView android:id="@+id/textView2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/enter_location" ></TextView>
+                <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content" >
+                    <Button android:id="@+id/button1" android:layout_width="wrap_content" android:layout_height="55dp" android:layout_alignParentRight="true" android:drawableLeft="@drawable/refresh_48x48" android:focusable="true" >
+                        <requestFocus />
+                    </Button>
+                    <Spinner android:id="@+id/spinner" android:layout_width="240dp" android:layout_height="wrap_content" android:prompt="@string/location_prompt" />
+                </RelativeLayout>
+                <TextView android:id="@+id/textView6" android:layout_width="fill_parent" android:layout_height="10dp" android:text="" > </TextView>
+                <RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content" >
+                    <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:text="@string/forecast" >
+                    </TextView>
+                    <TextView android:id="@+id/textView9" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true" android:text="" >
+                    </TextView>
+                </RelativeLayout>
+                <TextView android:id="@+id/textView4" android:layout_width="fill_parent" android:layout_height="5dp" android:text="" >
+                </TextView>
+                <LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent" >
+                    <WebView android:id="@+id/webview" android:layout_width="fill_parent" android:layout_height="wrap_content" >
+                        <requestFocus /> 
+                    </WebView>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+        <LinearLayout
+	        android:id="@+id/hourlyLinearLayout1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent" >
+
+	        <WebView
+	            android:id="@+id/hourlyWebView"
+	            android:layout_width="0dip"
+	            android:layout_height="fill_parent"
+	            android:layout_weight="1"
+	            android:inputType="textMultiLine" >
+        	</WebView>
+
+    </LinearLayout>
+    </ViewFlipper>
+
+    <LinearLayout android:id="@+id/ad_linear_layout" android:layout_width="wrap_content" android:layout_height="wrap_content" >
+
+        <!-- <TextView android:text="Placeholder" android:id="@+id/textView999"  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true"> </TextView> -->
+
+        <!-- com.google.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+            android:id="@+id/my_ad_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="a14f4ee0fde0b30"
+            ads:loadAdOnCreate="true"
+            android:layout_weight="9" /-->
+            <!-- ads:testDevices="TEST_EMULATOR" -->
+        
+    </LinearLayout>
+</LinearLayout>
