@@ -71,7 +71,7 @@ public class Forecast {
     }
     
     public String getHourlyHTMLTable(){
-    	String theContent = "";
+    	String theContent;
     	try{
 	    	if (times_3h != null){ // See if the hourly data has been loaded. 
 		    	theContent = "<html><center><H3><font color=\"#000088\">"+ location+"</font></h3></center>" ;
@@ -164,7 +164,7 @@ public class Forecast {
     
     // Convert degrees into a familiar direction.
     public static String getWindDirection(String directionString){
-    	int direction = 0;
+    	int direction;
     	try{direction = Integer.valueOf(directionString);} catch (NumberFormatException e) {return "";}
     	double div = 360/32; // Divide circle into 32 pieces for convenience.
     	if (direction >   1*div  && direction <= 3* div ) {return "NNE";}

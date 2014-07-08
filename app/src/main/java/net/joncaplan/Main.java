@@ -37,10 +37,7 @@ public class Main extends Activity {
         gestureDetector = new GestureDetector(new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
-                    return true;
-                }
-                return false;
+                return gestureDetector.onTouchEvent(event);
             }
         };
     }
@@ -69,9 +66,6 @@ public class Main extends Activity {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector.onTouchEvent(event))
-	        return true;
-	    else
-	    	return false;
+        return gestureDetector.onTouchEvent(event);
     }
 }

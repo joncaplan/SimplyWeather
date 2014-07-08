@@ -89,7 +89,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 	ScrollView myMainScrollView    = null;
 	TextView   myTextView          = null; 
     WebView    myWebView           = null;
-    WebView    myHourlywebView     = null;
+    WebView    myHourlyWebView     = null;
     TextView   timeSinceUpdateView = null;
     Button     myButton            = null;
     Spinner    locationSpinner     = null;
@@ -99,7 +99,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     boolean    userRequestedUpdate;     // Was the request for updated forecast initiated by user? Used to suppress frequent network availability error messages from automatic updates.
     String     toastErrorMessage = "";  // Error message to appear in "Toast" pop-up. 
     private static final String DEBUG_TAG = "SimplyWeather forecast";  // For log file.
-    static final int log_level = 1;     // 0=errors only. 1=informational 2=verbose 3=very_verbose -1=logging off. 
+    int log_level = 1;                  // 0=errors only. 1=informational 2=verbose 3=very_verbose -1=logging off.
     ForecastManager theForecastManager; // Manages interface between app and local forecast database.
     ArrayList<Forecast> forecasts;      // All locations and forecasts stored locally.
     Forecast currentForecast;           // Forecast being displayed.
@@ -149,11 +149,11 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
           myButton            = (Button)     findViewById(R.id.button1); 
       	  myTextView          = (TextView)   findViewById(R.id.textView2);
 		  myWebView           = (WebView)    findViewById(R.id.webview);        // This webView has the main forecast view.
-		  myHourlywebView     = (WebView)    findViewById(R.id.hourlyWebView);  // This displays the hourly data. (Wind speed etc.)
+		  myHourlyWebView     = (WebView)    findViewById(R.id.hourlyWebView);  // This displays the hourly data. (Wind speed etc.)
 		  timeSinceUpdateView = (TextView)   findViewById(R.id.textView9);
           locationSpinner     = (Spinner)    findViewById(R.id.spinner);
           
-          myHourlywebView.getSettings().setJavaScriptEnabled(true); // Required to be able to display animated "Loading ..." message.
+          myHourlyWebView.getSettings().setJavaScriptEnabled(true); // Required to be able to display animated "Loading ..." message.
 		  myWebView.getSettings().setJavaScriptEnabled(false);		// No JavaScript here.   
 
 
@@ -243,7 +243,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }*/
 
     void makeUseOfNewLocation(Location location){
-/*        if (location != null &&  API_level > 7){
+/*s        if (location != null &&  API_level > 7){
 
 	    	showToastMessage("Latitude "  + location.getLatitude() + "  Longitude " + location.getLongitude(), 5);
 	    	physicalLocation = location; // Update global location variable.
@@ -335,7 +335,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     
     public void refreshHourlyView(){
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Updating myHourlyWebView.");}
-		myHourlywebView.loadData(currentForecast.getHourlyHTMLTable(), "text/html", "utf-8");
+		myHourlyWebView.loadData(currentForecast.getHourlyHTMLTable(), "text/html", "utf-8");
     }
         
     public void refreshForecastPanel(){
@@ -509,7 +509,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		    header3 = conn.getHeaderField(3); // This has the URL we need.
 		    
 		    if (header2.equals("230") || header3.equals("230")){
-		    	toastErrorMessage += "Sorry, I couln't find that location. \n\n The location should be in form of: \n\n City, State or a valid 5-digit zip code. \n\n US locations only."; 
+		    	toastErrorMessage += "Sorry, I couldn't find that location. \n\n The location should be in form of: \n\n City, State or a valid 5-digit zip code. \n\n US locations only.";
 		    	pageContent += "Error: Unknown location"; 
 		    } else {
 			    // Get the final response
@@ -850,7 +850,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		    if(header2.startsWith("http://") ){ theNextURL = header2;}
 		    
 		    if (theNextURL.equals("")){ 
-		    	String errorMessage = "Sorry, I couln't find that location. \n\n The location should be in form of: \n\n City, State or a valid 5-digit zip code. \n\n US locations only."; 
+		    	String errorMessage = "Sorry, I couldn't find that location. \n\n The location should be in form of: \n\n City, State or a valid 5-digit zip code. \n\n US locations only.";
 		    	pageContent = "Error: Unknown location"; 
 		    	toastErrorMessage =  errorMessage; 
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "Could not find URL in either header 1 or 2.");}
@@ -1146,7 +1146,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		    // Start with current conditions.
             // Check for presence of local conditions. Zero wind speed is default if no value set. -1 Wind speed mean no value set.
 		    if (!(theWindSpeed < 0 && (theTemperature.equals("0")) || theTemperature.equals("") || theTemperature.equals("NA") )  ){
-			    String currentObservations = "<font color=\"blue\"><b>Current Condtions</b></font> <br>";
+			    String currentObservations = "<font color=\"blue\"><b>Current Conditions</b></font> <br>";
 		    	displayText = displayText + "<img src=\"" + theConditionsIconURL + "\""  +   " align=\"right\" >  "; // Note: Align right is deprecated, but still supported. (Replaced with styles.)
 		    	displayText = displayText + currentObservations +"<b>Temperature: " + theTemperature + "&deg;F</b><br> ";
 		    	if (theWindSpeed >= 0){ // Sanity check. (-1 signals non-numeric or missing value. "NA" has been seen in forecast XML when local conditions aren't given. (San Francisco))
@@ -1473,6 +1473,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
             }
 
     	}
+        // These are the largest cities in the US.
     	String[] cities = {
     			"NEW YORK", "NY",
     			"LOS ANGELES","CA",
@@ -1713,7 +1714,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     public class MyOnItemSelectedListener implements OnItemSelectedListener {
 
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long itemID) {
-        	Log.i(DEBUG_TAG, "onItemSlecected called.");
+        	Log.i(DEBUG_TAG, "onItemSelected called.");
         	if (currentForecastIndex != (int) itemID){ // Don't do anything unless a new location is selected. onItemSelected() gets called more than I'd expect. 
 	            currentForecastIndex = (int) itemID; // My location indices match the drop-down positions and itemIDs.
 	            currentForecast = forecasts.get(currentForecastIndex);
