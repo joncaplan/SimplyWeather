@@ -1,3 +1,5 @@
+// SimplyWeather (c) 2014 Jonathan Caplan.
+
 package net.joncaplan;
 
 import java.util.ArrayList;

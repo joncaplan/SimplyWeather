@@ -1,4 +1,4 @@
-// SimplyWeather (c) 2014 Jonathan Caplan. All rights reserved.
+// SimplyWeather (c) 2014 Jonathan Caplan.
 
 package net.joncaplan;
 
