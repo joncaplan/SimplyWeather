@@ -23,12 +23,16 @@ public class AboutDialogBuilder {
 			aboutText = "Simply Weather Free gives you just the forecast, in detail! " +
 				"Swipe left or right to see table of weather data. \n\n"+
 				"Visit apps.joncaplan.net to upgrade to ad-free version for $0.99.\n\n"+
-				"Feedback and bug reports welcome at:\nsimplyweather@joncaplan.net \n(c) 2012 Jon Caplan\n\n" +
+				"Feedback and bug reports welcome at:\nsimplyweather@joncaplan.net \n(c) 2014 Jon Caplan. "+
+                "This program is open source and available the GPL 2 license at GitHub.  "+
+                "(https://github.com/joncaplan/SimplyWeather)\n\n" +
 				"About, add, delete and refresh icons from: http://www.visualpharm.com under CC license.";
 		else 
 			aboutText = "Simply Weather gives you just the forecast, in detail. " +
 				"Swipe left or right to see table of weather data. \n\n"+
-				"Feedback and bug reports welcome at:\nsimplyweather@joncaplan.net \n(c) 2012 Jon Caplan\n\n" +
+				"Feedback and bug reports welcome at:\nsimplyweather@joncaplan.net \n(c) 2014 Jon Caplan. " +
+                "This program is open source and available under the GPL 2 license at GitHub.  "+
+                "github.com/joncaplan/SimplyWeather\n\n" +
 				"About, add, delete and refresh icons from: http://www.visualpharm.com under CC license.";
 
 		// Set up the TextView

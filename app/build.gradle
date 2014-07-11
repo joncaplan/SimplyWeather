@@ -1,18 +1,28 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 9
+    compileSdkVersion 20
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "net.joncaplan"
         minSdkVersion 9
-        targetSdkVersion 9
+        targetSdkVersion 20
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("my-release-key.keystore")
+            storePassword "password"
+            keyAlias "MyReleaseKey"
+            keyPassword "password"
+        }
     }
 
     buildTypes {
         release {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
         }
     }
 }
