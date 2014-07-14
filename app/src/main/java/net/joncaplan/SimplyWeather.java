@@ -58,9 +58,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-//import com.google.ads.AdRequest;
-//import com.google.ads.AdView;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -125,8 +122,6 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     //LocationListener locationListener;     // Used in determining user's location.
     //LocationManager  locationManager;      // Used in determining user's location.
     //int API_level  = 7;                    // Some features require certain android API levels. Currently the  makeUseOfNewLocation() method used geocoding or XML parsing only available in API level 8.
-    //private AdView adView;                 // Used to display ads in the ad-supported version. (Currently done in XML, so disabled.)
-    boolean useAds = false;                  // Should this build display ads? Note: Ads are disabled in a few other locations, as well, including manifest and ad library being removed.
 
     //Needed to handle swiping left-right to switch locations.
 	private Animation slideRightIn;
@@ -179,22 +174,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
           locationSpinner.setAdapter(adapter);
           locationSpinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
           myButton.setOnClickListener(this);
-          
-          // Handle advertisements in app. (Free version only!)
-          /* Currently done in XML
-          adView = new AdView(this, AdSize.BANNER, "a14f4ee0fde0b30" );
-          AdRequest adRequest = new AdRequest();
-          adRequest.addTestDevice(AdRequest.TEST_EMULATOR); 
-          LinearLayout layout = (LinearLayout) findViewById(R.id.mainLayout);
-          layout.addView(adView);
-          adView.loadAd(new AdRequest());
-          */
-          /*if (useAds){ // Only some builds will have ads. 
-             // Ads are entirely in ./res/layout/main.xml. No need to enable this code. Mere place holder in case I want to use it later.
-        	  AdView myAdView = (AdView) findViewById(R.id.my_ad_view);
-        	  myAdView.loadAd(new AdRequest());
-          }*/
-          
+
           // Gesture detection
           gestureDetector = new GestureDetector(new MyGestureDetector());
           gestureListener = new View.OnTouchListener() {
@@ -317,7 +297,6 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     				savePreferredLocationID(currentForecast.id);
     			}
     			if (log_level > 0) {Log.i(DEBUG_TAG, "Set current forecast");}
-    			//if (currentForecast.hourlyHTML.equals("") || currentForecast.hourlyHTML.startsWith("<!-- Error -->")){ // If the current location is missing hourly data.
     			if (currentForecast.getHourlyHTMLTable().equals("") || currentForecast.getHourlyHTMLTable().startsWith("<!-- Error -->")){ // If the current location is missing hourly data.
     				backgroundUpdateHourlyXMLData(currentForecast);   // ... retrieve that data.
     			}
@@ -499,12 +478,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		String theURL      = "http://mobile.weather.gov/port_zc.php";
 		try{
 		    // Construct data
-			String key1   = "inputstring";
-			String value1 = theLocation;
-			String key2   = "Go2";
-			String value2 = "Go";
-		    String data   =      URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(value1, "UTF-8");
-		    data = data + "&" +  URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(value2, "UTF-8");
+            String data = URLEncoder.encode("inputstring", "UTF-8") + "=" +
+                          URLEncoder.encode(theLocation,   "UTF-8") + "&" +
+                          URLEncoder.encode("Go2", "UTF-8")         + "=" +
+                          URLEncoder.encode("Go", "UTF-8");
 		    URL url       = new URL(theURL);
 		    if (log_level > 0) {Log.i(DEBUG_TAG, "Created URL for Alaska forecast. data="+data);}
 		    
@@ -836,12 +813,11 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		}
 		try{
 		    // Construct data for first HTTP packet
-			String key1   = "inputstring";
-			String value1 = theLocation;
-			String key2   = "Go2";
-			String value2 = "Go";
-		    String data   =      URLEncoder.encode(key1, "UTF-8") + "=" + URLEncoder.encode(value1, "UTF-8");
-		    data = data + "&" +  URLEncoder.encode(key2, "UTF-8") + "=" + URLEncoder.encode(value2, "UTF-8");
+
+		    String data = URLEncoder.encode("inputstring", "UTF-8") + "=" +
+                          URLEncoder.encode(theLocation,   "UTF-8") + "&" +
+                          URLEncoder.encode("Go2",         "UTF-8") + "=" +
+                          URLEncoder.encode("Go",          "UTF-8");
 
 		    // Send data for first HTTP packet
 		    URL url       = new URL(theURL);
@@ -1294,15 +1270,13 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     void showAboutBox(){
         AlertDialog builder;
         try {
-        	builder = AboutDialogBuilder.create(this, useAds);
+        	builder = AboutDialogBuilder.create(this);
         	builder.show();
         } catch (NameNotFoundException e) {
         	e.printStackTrace();
         }
     }
-    
-    void showHelp(){}
-    
+
     void deleteCurrentLocation(){
 	    // Delete the location from the database.
     	theForecastManager.deleteForecast(currentForecast.id);
@@ -1333,9 +1307,6 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
         	showDialog(DELETE_LOCATION_DIALOG_ID);
         	//deleteCurrentLocation();
             return true;
-        //case R.id.help:
-        //    showHelp();
-        //    return true;
         default:
             return super.onOptionsItemSelected(item);
         }

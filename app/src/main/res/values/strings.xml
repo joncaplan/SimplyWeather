@@ -14,6 +14,6 @@
     
     
     <string name="ok">OK</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="location_prompt">location</string>
 </resources>
