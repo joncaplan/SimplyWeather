@@ -27,14 +27,14 @@ public class AboutDialogBuilder {
                     "About, add, delete and refresh icons from: http://www.visualpharm.com under CC license.";
         else
             aboutText = "Simply Weather gives you just the forecast, in detail. " +
-                    "Swipe left or right to see table of weather data. <br><br>" +
+                    "Swipe left or right in the app to see table of temperature, wind speed and wind direction. <br><br>" +
                     "Feedback and bug reports welcome at:<br>simplyweather@joncaplan.net<br><br>" +
                     "This program is open source and available under the GPL 2 license at GitHub.  " +
                     "<a href='http://github.com/joncaplan/SimplyWeather'>github.com/joncaplan/SimplyWeather</a>" +
                     "<br>(c) 2014 Jon Caplan.<br><br>" +
                     "About, add, delete and refresh icons from: " +
                     "<a href='http://www.visualpharm.com'>www.visualpharm.com</a> under CC license.<br><br>"+
-                    "<img src='http://ecx.images-amazon.com/images/I/71S-R%2BOZ1dL._SL500_AA300_.png' >"
+                    "<center><img src='http://ecx.images-amazon.com/images/I/71S-R%2BOZ1dL._SL500_AA300_.png' ></center>"
                     ;
 
         /*String donateHeader = "<script type=\"text/javascript\">" +
