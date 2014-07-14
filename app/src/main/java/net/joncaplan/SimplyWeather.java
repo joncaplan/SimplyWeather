@@ -176,7 +176,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
           myButton.setOnClickListener(this);
 
           // Gesture detection
-          gestureDetector = new GestureDetector(new MyGestureDetector());
+          gestureDetector = new GestureDetector(getApplicationContext(), new MyGestureDetector());
           gestureListener = new View.OnTouchListener() {
               public boolean onTouch(View v, MotionEvent event) {
                   return gestureDetector.onTouchEvent(event);
