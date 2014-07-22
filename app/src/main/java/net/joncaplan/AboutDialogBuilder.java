@@ -8,7 +8,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.webkit.WebView;
 
 // Code adapted from: http://www.itkrauts.com/archives/26-Creating-a-simple-About-Dialog-in-Android-1.6.html
-public class AboutDialogBuilder {
+class AboutDialogBuilder {
     public static AlertDialog create(Context context) throws NameNotFoundException {
         // Try to load the a package matching the name of our own package
         PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_META_DATA);

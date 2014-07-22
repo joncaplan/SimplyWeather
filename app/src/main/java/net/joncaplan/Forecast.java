@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import android.util.Log;
 
-public class Forecast {
+class Forecast {
 	public int    id;           // Just a database ID. When an ID is deleted it is not reused, unless it is the last ID. (Holes in sequence are not filled.)
 	public String location;     // The location as the user has entered it, as a ZIP code, City & State or whatever future format becomes allowed.
 	public double latitude;     // Latitude of this location. Values over 180 indicate location not set.
@@ -62,7 +62,7 @@ public class Forecast {
 	}
 		
     // Return an element of wind_speeds as a String in MPH.
-    public String getWindSpeedMPH(Integer i){
+    String getWindSpeedMPH(Integer i){
     	String speedMPH = "";
     	try{
     		speedMPH = Math.round(Double.valueOf(wind_speeds.get(i))*1.15077945) + "";
@@ -142,7 +142,7 @@ public class Forecast {
 		} 		
     }
     
-    public String getCurrentHazardHTML(){
+    String getCurrentHazardHTML(){
     	String hazardHTML = "";
     	if (hazards != null && times_1h != null){
 	    	for (int i=0; i<hazards.size() && i<4; i++){

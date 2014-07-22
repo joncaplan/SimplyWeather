@@ -2,18 +2,17 @@
 package net.joncaplan;
 import android.util.Log;
 
-public class MyDate{
+class MyDate{
 	
 	private int year;
 	private int month;
 	private int day;
-	private int hour_24;
 	private int hour_12;
 	private String hour;
 	private String minute;
 	private String second;
 	private String AMPM;
-	private static String DEBUG_TAG = "MyDate"; 
+	private static final String DEBUG_TAG = "MyDate";
 	
 	// Input in in form YYYY-MM-DDTHH:MM:SS-HH:MM. "T" is a separator. Final HH:MM is offset from GMT.
 	MyDate(String dateTime){
@@ -23,7 +22,7 @@ public class MyDate{
 		year                 = Integer.valueOf(theDateString.substring(0, 4));
 		month                = Integer.valueOf(theDateString.substring(5, 7));
 		day                  = Integer.valueOf(theDateString.substring(8, 10));
-		hour_24              = Integer.valueOf(dateTime.substring(begin,   begin+2)); // The hour part of the date, in local time.
+		int hour_24          = Integer.valueOf(dateTime.substring(begin,   begin+2)); // The hour part of the date, in local time.
 		minute               = dateTime.substring(begin+3, begin+5);
 		second               = dateTime.substring(begin+6, begin+8); 
 		hour_12              = hour_24%12;

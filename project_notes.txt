@@ -215,7 +215,7 @@ TODO:
 					49. Deleting location sometimes fails. This may cause duplication of locations at the end of the list. First test whether there
 						are fewer entries in the table after a deletion attempt,
 						
-		Version 1.4
+		Version 1.5
 				Licensed under GPL 2.
 				Removed cases where current conditions would show "N/A".
 				Moved to Android Studio development environment.
@@ -294,7 +294,6 @@ To release a new version
 	In Android Studio:	
 		Follow instructions at: http://developer.android.com/sdk/installing/studio-build.html#configureSigning 
 		Build/Generate Signed APK... (password is standard!)
-	Profit.
 	
 Switching build between free and paid.
 	0. Check permissions. Does ad version require location?

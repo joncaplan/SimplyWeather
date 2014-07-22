@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,9 +66,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.location.Location;
-//import android.location.LocationListener;
-//import android.location.LocationManager;
 import android.os.AsyncTask;
 //import android.os.Build;
 import android.os.Bundle;
@@ -99,25 +95,25 @@ import org.apache.commons.net.ftp.FTPClient; // Used to report back errors.
 
 @SuppressLint("DefaultLocale")
 public class SimplyWeather extends Activity implements android.view.View.OnClickListener {
-	ScrollView myMainScrollView    = null;
-	TextView   myTextView          = null; 
-    WebView    myWebView           = null;
-    WebView    myHourlyWebView     = null;
-    TextView   timeSinceUpdateView = null;
-    Button     myButton            = null;
-    Spinner    locationSpinner     = null;
-    ArrayAdapter <CharSequence> adapter;
+	private ScrollView myMainScrollView    = null;
+	private TextView   myTextView          = null;
+    private WebView    myWebView           = null;
+    private WebView    myHourlyWebView     = null;
+    private TextView   timeSinceUpdateView = null;
+    private Button     myButton            = null;
+    private Spinner    locationSpinner     = null;
+    private ArrayAdapter <CharSequence> adapter;
     
-    long       timeOfNetworkErrorMessage = System.currentTimeMillis()/1000;
-    boolean    userRequestedUpdate;     // Was the request for updated forecast initiated by user? Used to suppress frequent network availability error messages from automatic updates.
-    String     toastErrorMessage = "";  // Error message to appear in "Toast" pop-up. 
+    private long       timeOfNetworkErrorMessage = System.currentTimeMillis()/1000;
+    private boolean    userRequestedUpdate;     // Was the request for updated forecast initiated by user? Used to suppress frequent network availability error messages from automatic updates.
+    private String     toastErrorMessage = "";  // Error message to appear in "Toast" pop-up.
     private static final String DEBUG_TAG = "SimplyWeather forecast";  // For log file.
-    int log_level = 1;                  // 0=errors only. 1=informational 2=verbose 3=very_verbose -1=logging off.
-    ForecastManager theForecastManager; // Manages interface between app and local forecast database.
-    ArrayList<Forecast> forecasts;      // All locations and forecasts stored locally.
-    Forecast currentForecast;           // Forecast being displayed.
-    int      currentForecastIndex  = 0; // The index in the forecasts Array of the currentForecast.
-    int      greatestLocationID    = 0; // Greatest LocationID in database. Used in assigning the ID for a new location.
+    private int log_level = 1;                  // 0=errors only. 1=informational 2=verbose 3=very_verbose -1=logging off.
+    private ForecastManager theForecastManager; // Manages interface between app and local forecast database.
+    private ArrayList<Forecast> forecasts;      // All locations and forecasts stored locally.
+    private Forecast currentForecast;           // Forecast being displayed.
+    private int      currentForecastIndex  = 0; // The index in the forecasts Array of the currentForecast.
+    private int      greatestLocationID    = 0; // Greatest LocationID in database. Used in assigning the ID for a new location.
     //Location physicalLocation      = null; // Where in the world is our user. Coarse-grained location from Cell network or WiFi. (No need for GPS battery drain or granularity.)
     //LocationListener locationListener;     // Used in determining user's location.
     //LocationManager  locationManager;      // Used in determining user's location.
@@ -133,9 +129,8 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     private static final int SWIPE_MAX_OFF_PATH       = 50;
     private static final int SWIPE_THRESHOLD_VELOCITY = 50;
     private GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
-    boolean updating           = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once.
-    boolean hourlyDataUpdating = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once. 
+    private boolean updating           = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once.
+    private boolean hourlyDataUpdating = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once.
     
     private static final int ADD_LOCATION_DIALOG_ID    = 1;
     private static final int DELETE_LOCATION_DIALOG_ID = 2;
@@ -177,11 +172,11 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 
           // Gesture detection
           gestureDetector = new GestureDetector(getApplicationContext(), new MyGestureDetector());
-          gestureListener = new View.OnTouchListener() {
-              public boolean onTouch(View v, MotionEvent event) {
-                  return gestureDetector.onTouchEvent(event);
-              }
-          };
+        View.OnTouchListener gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
           
        // Do this for each view added to the grid to enable swiping for each view item. (other than locationSpinner)
           myWebView.setOnClickListener(SimplyWeather.this); 
@@ -238,8 +233,8 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	  // Registration of locationListener happens in a moment when onResume() is called. (See Android activity life cycle.)
     }*/
 
-    void makeUseOfNewLocation(Location location){
-/*s        if (location != null &&  API_level > 7){
+/*    void makeUseOfNewLocation(Location location){
+        if (location != null &&  API_level > 7){
 
 	    	showToastMessage("Latitude "  + location.getLatitude() + "  Longitude " + location.getLongitude(), 5);
 	    	physicalLocation = location; // Update global location variable.
@@ -263,8 +258,8 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			showToastMessage(locality + ", " + state_province + " ZIP " + postal_code, 3);
         }else{
         	  showToastMessage("Could not get physical location.",3);
-        }*/
-    }
+        }
+    }*/
     
     // Puts the forecast locations into the spinner drop-down.
     void loadSpinnerAdapterItems(){
@@ -275,7 +270,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }
     
     // Load forecasts from the database.
-    public void loadForecasts(){
+    void loadForecasts(){
     	forecasts = theForecastManager.getForecasts();
     	if (log_level > 0) {Log.i(DEBUG_TAG, "Got forecasts from database.");}
     	int num_forecasts = forecasts.size();
@@ -311,7 +306,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	if (log_level > 0) {Log.i(DEBUG_TAG, "Set current forecast from forecasts ArrayList.");}	
     }
     
-    public void refreshScreen(){ // Update all the elements of the screen.
+    void refreshScreen(){ // Update all the elements of the screen.
     	if (log_level > 0) {Log.i(DEBUG_TAG, "refreshScreen() called for location: " + currentForecast.location + "viewFlipper child ID is: " + viewFlipper.getDisplayedChild());}
 		refreshForecastView(); // Refresh both views, so they are ready when we flip to see them.
 		refreshHourlyView();
@@ -320,7 +315,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			toastErrorMessage = "";
     }
     
-    public void refreshForecastView(){
+    void refreshForecastView(){
     	loadSpinnerAdapterItems();
     	locationSpinner.setSelection(currentForecastIndex); // Make sure the correct item is selected in the spinner.
 	    showLastUpdateTime(); // Display time since last forecast update.
@@ -328,12 +323,12 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	myMainScrollView.fullScroll(ScrollView.FOCUS_UP);// Scroll to top.
     }
     
-    public void refreshHourlyView(){
+    void refreshHourlyView(){
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Updating myHourlyWebView.");}
 		myHourlyWebView.loadData(currentForecast.getHourlyHTMLTable(), "text/html", "utf-8");
     }
         
-    public void refreshForecastPanel(){
+    void refreshForecastPanel(){
 		  myWebView.loadData(currentForecast.getForecastAndHazardHTML(), "text/html", "utf-8");
     }
  
@@ -346,14 +341,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			backgroundUpdateHourlyXMLData(currentForecast);
 	}
 	
-	// Stub to update an existing forecast. 
-	// Should save one round trip since latitude and longitude are already known.
-	public void updateForecast (Forecast theForecast) {
-		//TODO: Write this method. Eventually transition getForecast() to do a lat & lon lookup and then call this method.
-		// The current getForecast method is ugly, since it lacks a Forecast object. 
-	}
-	
-	public void getForecast(String theLocation){
+	void getForecast(String theLocation){
 		// Need to check if the location is being switched to an already saved location. In that case show saved forecast.
 		// Never show location and forecast mismatch.
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Getting new forecast for " + theLocation);}
@@ -460,7 +448,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		backgroundUpdateHourlyXMLData(currentForecast); // Fire off request to get hourly data for this forecast.
 	}
 	
-	String getAlaskaForecastHTML(String theLocation){
+/*	String getAlaskaForecastHTML(String theLocation){
 	//		<form action ="port_zc.php" method="get">
 	//		<input type="text" name="inputstring" size="15" value="">
 	//		<input type="submit" name="Go2" value="Go"></form>
@@ -562,7 +550,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			if (log_level > 0) {Log.i(DEBUG_TAG, "Error getting Alaska forecast: " + e.getMessage() + Arrays.toString(e.getStackTrace()));}
 		}
 		return pageContent;
-	}
+	}*/
 	
 	// Update the hourly XML data (wind speed, temperature, ...) for a forecast. 
 	void backgroundUpdateHourlyXMLData(Forecast theForecast){
@@ -596,7 +584,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 	}
 	
 	// Get forecast details for a geographic point.
-	public String getHourlyDetailsXMLPage (double latitude, double longitude){
+    String getHourlyDetailsXMLPage(double latitude, double longitude){
 		String pageContent = "";
 		try {
 			// Build up query string based on what features we want in forecast.
@@ -796,7 +784,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }
 
     
-	public ForecastXMLPage getXMLPage(String theURL, String theLocation){
+	ForecastXMLPage getXMLPage(String theURL, String theLocation){
 		ForecastXMLPage theXMLPage = new ForecastXMLPage();
 		
 	    Log.i(DEBUG_TAG, "theURL is: " + theURL);
@@ -911,7 +899,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 	}
 	
 	// Parse the XML document and return an HTML page. 
-	public ForecastHTMLPage parsePage(String pageContent, String theLocation){
+    ForecastHTMLPage parsePage(String pageContent, String theLocation){
 		
 		ForecastHTMLPage forecast = new ForecastHTMLPage();
 		forecast.forecastText = "";
@@ -919,9 +907,9 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		forecast.hasError     = true; 
 
 		String displayText  = ""; // Text to present to the user.
-		int forecastPeriods; // Number of time periods (e.g. "This evening", "Tomorrow morning", ...) in the forecast.
-		String[] forecastTexts;  // Text of forecast for each period.
-		String[] forecastTitles; // Title for each period. ("This evening" ...)
+		int forecastPeriods;      // Number of time periods (e.g. "This evening", "Tomorrow morning", ...) in the forecast.
+		String[] forecastTexts;   // Text of forecast for each period.
+		String[] forecastTitles;  // Title for each period. ("This evening" ...)
 		String errorMessage = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
 		if (pageContent.startsWith("<!doctype html public \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>")){
 			forecast.errorText = pageContent;
@@ -933,7 +921,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>"; 
 			return(forecast);
 		}
-		//if (log_level > 0) {Log.i(DEBUG_TAG, pageContent);} // Display XML for debugging.
+
 		try{
 			Document doc;
 			try{
@@ -1202,7 +1190,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			SharedPreferences settings = getPreferences(0);
 			Editor theEditor = settings.edit();
 			theEditor.putInt("preferredLocationID", preferredLocationID);
-			theEditor.commit();
+			theEditor.apply();
 			if (log_level > 0) {Log.i(DEBUG_TAG, "Saved preferredLocationID "+preferredLocationID);}
 			return true;
 		}
@@ -1211,11 +1199,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			return false;
 		}
 	}
-	
-	String getGPSLocation(){
-		return(null);
-	}
-	
+
     @Override
     protected void onPause(){
 		super.onPause();
@@ -1323,7 +1307,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }
     
     @SuppressLint("DefaultLocale")
-	public String preprocessPlaceName (String thePlace){ // Inserts comma if needed into place name, between city and state.
+    String preprocessPlaceName(String thePlace){ // Inserts comma if needed into place name, between city and state.
     	thePlace = thePlace.trim().toUpperCase(Locale.US); 
     	if (thePlace.matches("\\d\\d\\d\\d\\d")){ // Check for 5-digit ZIP code.
     		return thePlace;
@@ -1572,7 +1556,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
         t.start();
     }
     
-    class MyGestureDetector extends SimpleOnGestureListener {
+    private class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
@@ -1582,23 +1566,11 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
                 if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     viewFlipper.setInAnimation(slideLeftIn);
                     viewFlipper.setOutAnimation(slideLeftOut);
-                	/*if (forecasts.size() > 1){ // Only flip if there is another location to show.
-                        viewFlipper.showNext();
-	                    currentForecastIndex++;
-	                    if (currentForecastIndex >= forecasts.size()){currentForecastIndex = 0;} // Wrap around to zero, if needed.
-	                    currentForecast = forecasts.get(currentForecastIndex);
-                	}*/
                     refreshScreen();
                     viewFlipper.showNext();
                 }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 	viewFlipper.setInAnimation(slideRightIn);
                     viewFlipper.setOutAnimation(slideRightOut);
-                	/*if (forecasts.size() > 1){// Only flip if there is another location to show.
-                    	viewFlipper.showPrevious();
-	                	currentForecastIndex--;
-	                    if (currentForecastIndex < 0) { currentForecastIndex = forecasts.size() -1;} // Wrap around to last element, if needed.
-	                    currentForecast = forecasts.get(currentForecastIndex);
-                	}*/
                     refreshScreen();
                 	viewFlipper.showPrevious();
                 }
@@ -1610,7 +1582,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
         }
     }
     
-    public void onAddLocation() { // View v
+    void onAddLocation() {
     	try {
             showDialog(ADD_LOCATION_DIALOG_ID);
     	} catch (Exception e){
@@ -1698,7 +1670,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }
     
     // Handle selection of item from drop-down spinner for location selection.
-    public class MyOnItemSelectedListener implements OnItemSelectedListener {
+    private class MyOnItemSelectedListener implements OnItemSelectedListener {
 
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long itemID) {
         	Log.i(DEBUG_TAG, "onItemSelected called.");
@@ -1748,21 +1720,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	return -1;
     }
         
-    // URL to request specific XML data for a location with known latitude and longitude.
-    // http://graphical.weather.gov/xml/SOAP_server/ndfdXML.htm generates sample queries. All empty requests can be dropped. http://site.com/foo.php?a=&b=2 can be http://site.com/foo.php?b=2 instead. 
-    String buildXMLRequestURL(double latitude, double longitude){
-    	String baseURL = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?whichClient=NDFDgen";
-    	String lat     = "&lat="+Double.toString(latitude); 
-    	String lng     = "&lon"+Double.toString(longitude);
-    	String product = "&product=time-series";
-    	String unit    = "&Unit=e";
-    	String maxTemp = "&maxt=maxt";
-    	String temp    = "&temp=temp";
-    	String submit  = "&Submit=Submit";
-    	return baseURL + lat + lng + product + unit + maxTemp + temp + submit;
-    }
-    
-    // Quick and dirty FTP of error code to my server. 
+    // Quick and dirty FTP of error code to my server.
     void sendErrorToJon(String theError, String theLocation){
 
     	String tag = "FTP";
@@ -1814,5 +1772,27 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	    Log.e(tag, e + Arrays.toString(e.getStackTrace()));
     	}
     }
-    
+
+    // The following disabled code is for use once the application is able to get GPS coordinates
+    // There will be an option to get forecast for the current location.
+
+    //import android.location.Location;
+    //import android.location.LocationListener;
+    //import android.location.LocationManager;
+
+    // URL to request specific XML data for a location with known latitude and longitude.
+    // http://graphical.weather.gov/xml/SOAP_server/ndfdXML.htm generates sample queries. All empty requests can be dropped. http://site.com/foo.php?a=&b=2 can be http://site.com/foo.php?b=2 instead.
+
+    /*String buildXMLRequestURL(double latitude, double longitude){
+        String baseURL = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?whichClient=NDFDgen";
+        String lat     = "&lat="+Double.toString(latitude);
+        String lng     = "&lon"+Double.toString(longitude);
+        String product = "&product=time-series";
+        String unit    = "&Unit=e";
+        String maxTemp = "&maxt=maxt";
+        String temp    = "&temp=temp";
+        String submit  = "&Submit=Submit";
+        return baseURL + lat + lng + product + unit + maxTemp + temp + submit;
+    }*/
+
 }

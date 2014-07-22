@@ -10,9 +10,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-public class ForecastManager {
+class ForecastManager {
 
-    private OpenDbHelper dbHelper;
+    private final OpenDbHelper dbHelper;
     private static final String LOCATION_TABLE    = "location"; ///sdcard/net.joncaplan/simply_weather/
     private static final String LOCATION_ID       = "ID";
     private static final String FORECAST_LOCATION = "forecast_location";
@@ -34,7 +34,7 @@ public class ForecastManager {
      * @param forecastLocation location of the forecast.
      * @return success or fail
      */
-    public String insert(int locationId, String forecastLocation, String forecastHTML, double latitude, double longitude) {
+    String insert(int locationId, String forecastLocation, String forecastHTML, double latitude, double longitude) {
     	long row;
         try {
         	Log.i(DEBUG_TAG, "Attempting forecast insert.");

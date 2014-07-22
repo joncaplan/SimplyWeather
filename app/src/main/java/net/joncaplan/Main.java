@@ -28,14 +28,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
-public class Main extends Activity {
+class Main extends Activity {
 
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	private GestureDetector gestureDetector;
-	View.OnTouchListener gestureListener;
-	private Animation slideLeftIn;
+    private Animation slideLeftIn;
 	private Animation slideLeftOut;
 	private Animation slideRightIn;
     private Animation slideRightOut;
@@ -51,13 +50,13 @@ public class Main extends Activity {
         slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
         
         gestureDetector = new GestureDetector(new MyGestureDetector());
-        gestureListener = new View.OnTouchListener() {
+        new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 return gestureDetector.onTouchEvent(event);
             }
         };
     }
-    class MyGestureDetector extends SimpleOnGestureListener {
+    private class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
