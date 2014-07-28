@@ -103,7 +103,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     private Button     myButton            = null;
     private Spinner    locationSpinner     = null;
     private ArrayAdapter <CharSequence> adapter;
-    
+
     private long       timeOfNetworkErrorMessage = System.currentTimeMillis()/1000;
     private boolean    userRequestedUpdate;     // Was the request for updated forecast initiated by user? Used to suppress frequent network availability error messages from automatic updates.
     private String     toastErrorMessage = "";  // Error message to appear in "Toast" pop-up.
@@ -131,18 +131,18 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     private GestureDetector gestureDetector;
     private boolean updating           = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once.
     private boolean hourlyDataUpdating = false; // Tracks whether a background update is in progress. Used to block herd of updates occurring at once.
-    
+
     private static final int ADD_LOCATION_DIALOG_ID    = 1;
     private static final int DELETE_LOCATION_DIALOG_ID = 2;
-    
+
     @SuppressLint({ "SetJavaScriptEnabled", "CutPasteId" }) // JavaScript required for waiting to load animation. CutPasteId warning happens because there are two web views.
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
           theForecastManager = new ForecastManager(getApplicationContext());
           loadForecasts(); // Get forecasts from database and load into forecasts ArrayList.
-          
+
           // Set up user interface.
           setContentView(R.layout.main);
           viewFlipper   = (ViewFlipper)findViewById(R.id.flipper);
@@ -150,17 +150,17 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
           slideLeftOut  = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
           slideRightIn  = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
           slideRightOut = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
-          
-		  myMainScrollView    = (ScrollView) findViewById(R.id.scrollview0); 
-          myButton            = (Button)     findViewById(R.id.button1); 
+
+		  myMainScrollView    = (ScrollView) findViewById(R.id.scrollview0);
+          myButton            = (Button)     findViewById(R.id.button1);
       	  myTextView          = (TextView)   findViewById(R.id.textView2);
 		  myWebView           = (WebView)    findViewById(R.id.webview);        // This webView has the main forecast view.
 		  myHourlyWebView     = (WebView)    findViewById(R.id.hourlyWebView);  // This displays the hourly data. (Wind speed etc.)
 		  timeSinceUpdateView = (TextView)   findViewById(R.id.textView9);
           locationSpinner     = (Spinner)    findViewById(R.id.spinner);
-          
+
           myHourlyWebView.getSettings().setJavaScriptEnabled(true); // Required to be able to display animated "Loading ..." message.
-		  myWebView.getSettings().setJavaScriptEnabled(false);		// No JavaScript here.   
+		  myWebView.getSettings().setJavaScriptEnabled(false);		// No JavaScript here.
 
 
           adapter = new ArrayAdapter <CharSequence> (this, android.R.layout.simple_spinner_item );
@@ -177,19 +177,19 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
                 return gestureDetector.onTouchEvent(event);
             }
         };
-          
+
        // Do this for each view added to the grid to enable swiping for each view item. (other than locationSpinner)
-          myWebView.setOnClickListener(SimplyWeather.this); 
+          myWebView.setOnClickListener(SimplyWeather.this);
           myWebView.setOnTouchListener(gestureListener);
           timeSinceUpdateView.setOnClickListener(SimplyWeather.this);
           timeSinceUpdateView.setOnTouchListener(gestureListener);
-          myMainScrollView.setOnClickListener(SimplyWeather.this); 
+          myMainScrollView.setOnClickListener(SimplyWeather.this);
           myMainScrollView.setOnTouchListener(gestureListener);
-          myTextView.setOnClickListener(SimplyWeather.this); 
+          myTextView.setOnClickListener(SimplyWeather.this);
           myTextView.setOnTouchListener(gestureListener);
-          myButton.setOnClickListener(SimplyWeather.this); 
+          myButton.setOnClickListener(SimplyWeather.this);
           myButton.setOnTouchListener(gestureListener);
-          
+
           // Items on the hourly view need to become listeners too.
           WebView hourlyWebView = (WebView) findViewById(R.id.hourlyWebView);
           hourlyWebView.setOnClickListener(SimplyWeather.this);
@@ -260,7 +260,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
         	  showToastMessage("Could not get physical location.",3);
         }
     }*/
-    
+
     // Puts the forecast locations into the spinner drop-down.
     void loadSpinnerAdapterItems(){
 	    adapter.clear();
@@ -268,7 +268,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
             adapter.add(theForecast.location);
         }
     }
-    
+
     // Load forecasts from the database.
     void loadForecasts(){
     	forecasts = theForecastManager.getForecasts();
@@ -281,10 +281,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     			int preferredLocationID = getPreferredLocationID();
     			for (int i=0; i<num_forecasts; i++){
     				if (forecasts.get(i).id > greatestLocationID) {greatestLocationID = forecasts.get(i).id;}
-    				if (forecasts.get(i).id == preferredLocationID) { // Get the database ID of the preferred forecast. 
+    				if (forecasts.get(i).id == preferredLocationID) { // Get the database ID of the preferred forecast.
     					currentForecastIndex = i;
     					currentForecast = forecasts.get(currentForecastIndex);
-    				}         			  
+    				}
     			}
     			if (currentForecastIndex <0 || currentForecastIndex > forecasts.size()){ // Check if preferred forecast is out of bounds.
     				currentForecastIndex = 0;                                            // If no preferred forecast was found just use the first one.
@@ -303,9 +303,9 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	}catch (Exception e){
     		Log.e(DEBUG_TAG, "Error getting forecast " +e);
     	}
-    	if (log_level > 0) {Log.i(DEBUG_TAG, "Set current forecast from forecasts ArrayList.");}	
+    	if (log_level > 0) {Log.i(DEBUG_TAG, "Set current forecast from forecasts ArrayList.");}
     }
-    
+
     void refreshScreen(){ // Update all the elements of the screen.
     	if (log_level > 0) {Log.i(DEBUG_TAG, "refreshScreen() called for location: " + currentForecast.location + "viewFlipper child ID is: " + viewFlipper.getDisplayedChild());}
 		refreshForecastView(); // Refresh both views, so they are ready when we flip to see them.
@@ -314,7 +314,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			showToastMessage(toastErrorMessage,6);
 			toastErrorMessage = "";
     }
-    
+
     void refreshForecastView(){
     	loadSpinnerAdapterItems();
     	locationSpinner.setSelection(currentForecastIndex); // Make sure the correct item is selected in the spinner.
@@ -322,25 +322,25 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     	refreshForecastPanel();
     	myMainScrollView.fullScroll(ScrollView.FOCUS_UP);// Scroll to top.
     }
-    
+
     void refreshHourlyView(){
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Updating myHourlyWebView.");}
 		myHourlyWebView.loadData(currentForecast.getHourlyHTMLTable(), "text/html", "utf-8");
     }
-        
+
     void refreshForecastPanel(){
 		  myWebView.loadData(currentForecast.getForecastAndHazardHTML(), "text/html", "utf-8");
     }
- 
+
 	public void onClick(View v){ // Handle press of Refresh button.
 			userRequestedUpdate   = true; // Ensure network error messages don't appear too frequently if user requests update.
 			//physicalLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER); // Note: Test code to ensure we can trigger location services.
 			//makeUseOfNewLocation( physicalLocation);                                                   // Note: Test code to ensure we can trigger location services.
-			
+
 			backgroundForecastUpdate(currentForecast.location);
 			backgroundUpdateHourlyXMLData(currentForecast);
 	}
-	
+
 	void getForecast(String theLocation){
 		// Need to check if the location is being switched to an already saved location. In that case show saved forecast.
 		// Never show location and forecast mismatch.
@@ -373,11 +373,11 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		String theURL = "http://forecast.weather.gov/zipcity.php";
 		ForecastXMLPage theXMLPage = getXMLPage(theURL, preprocessPlaceName(theLocation));
 		String forecastXML = theXMLPage.forecastXML;
-		
+
 		if (theXMLPage.hasError){
 			toastErrorMessage = theXMLPage.errorText;
 			if (theXMLPage.errorText.startsWith("Error: No location")){
-				myWebView.loadData("<html><body><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></body></html>", "text/html", "utf-8"); 
+				myWebView.loadData("<html><body><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></body></html>", "text/html", "utf-8");
 				// The <br> tags make to WebView tall enough.
 			}else if (theXMLPage.errorText.startsWith("Error: No Internet connection")){
 				// Should attempt to load a saved forecast here, if available.
@@ -390,34 +390,48 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			}
 			return;
 		}
-			
-		if (theXMLPage.isZone){			
+
+		if (theXMLPage.isZone){
 			int start = forecastXML.indexOf("<a name=\"contents\">"); // NOTE: This is quite brittle and ad-hoc, as it depends on exact HTML returned. Works, but should fix later.
 			int end   = forecastXML.indexOf("<br><br><br><br><br>");
-			
+
 			theForecast = forecastXML.substring(start, end); // Just copy the forecast part of the page to display.
 		}else{
-			 ForecastHTMLPage foo = parsePage(forecastXML, theLocation);    // Convert the XML into HTML to display. (Include theLocation for error reporting.)
-			 if (foo.hasError){
-				 toastErrorMessage = foo.errorText;
+            ForecastHTMLPage theForecastHTML = new ForecastHTMLPage();
+            try {
+                parsePage(forecastXML, theForecastHTML);    // Convert the XML into HTML to display. (Include theLocation for error reporting.)
+            }
+            catch (Exception e){
+                String errorMessage = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
+                toastErrorMessage  += "Sorry, cannot get forecast for this location.\n\n ";
+
+                if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #4: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+
+                errorMessage +=  " <br><br> An error has been encountered loading your forecast." +
+                        " A summary of the error is being sent to the developer of SimplyWeather so I can fix this issue in a future release."; // Show whatever error message has been passed up.
+                sendErrorToJon("Page content is: " + forecastXML, theLocation);
+                theForecastHTML.errorText = errorMessage;
+            }
+			 if (theForecastHTML.hasError){
+				 toastErrorMessage = theForecastHTML.errorText;
 				 return;
 			 }
-			 theForecast = foo.forecastText;				 
+			 theForecast = theForecastHTML.forecastText;
 		}
 		int theLocationID = theForecastManager.getLocationID(theLocation); // Get the ID of for this location.
-		
+
 		// Database error looking up "theLocation"
 		if (theLocationID <  -1){
 			if (log_level > 0) {Log.i(DEBUG_TAG, "Database error. Could not save forecast.");}
 			return;
 		}
-		
+
 		// Location does not exist in database.
-		if (theLocationID == -1){ 
+		if (theLocationID == -1){
 			if (log_level > 0) {Log.i(DEBUG_TAG, theLocation + " not found in database");}
 			String result;
 			try {
-				currentForecast = new Forecast( ++greatestLocationID,  theLocation,  theForecast, theXMLPage.latitude, theXMLPage.longitude); // 
+				currentForecast = new Forecast( ++greatestLocationID,  theLocation,  theForecast, theXMLPage.latitude, theXMLPage.longitude); //
 				forecasts.add(currentForecast);                  // Add to in-memory forecast list.
 			} catch (Exception e) {
 				if (log_level > 0) {Log.i(DEBUG_TAG,"Error inserting new forecast into ArrayList. "+e);}
@@ -431,9 +445,9 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 				}
 			savePreferredLocationID(currentForecast.id); // Note: This just makes the most recent location preferred. This should become user-selectable.
 		}
-		
+
 		// Check for update to forecast to location already in database.
-		if(theLocationID >= 0){ 
+		if(theLocationID >= 0){
 			try {
 				int index = findForecastIndex(theLocationID);
 				currentForecast = forecasts.get(index);
@@ -551,8 +565,8 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		}
 		return pageContent;
 	}*/
-	
-	// Update the hourly XML data (wind speed, temperature, ...) for a forecast. 
+
+	// Update the hourly XML data (wind speed, temperature, ...) for a forecast.
 	void backgroundUpdateHourlyXMLData(Forecast theForecast){
 
 		if (!hourlyDataUpdating){ // Don't do more than one simultaneous update.
@@ -560,29 +574,29 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			new AsyncTask<Forecast, Void, String>(){
 				@Override
 				protected void onPostExecute(String result) {
-					hourlyDataUpdating = false; 
+					hourlyDataUpdating = false;
 					if (viewFlipper.getDisplayedChild() == 1){ // Only refresh screen is the hourly panel is showing.
 						refreshScreen();
 					}
 				}
 				@Override
 				protected String doInBackground(Forecast... theForecasts){
-					Forecast theForecast = theForecasts[0]; // We only need the one Forecast passed by .execute() below. 
+					Forecast theForecast = theForecasts[0]; // We only need the one Forecast passed by .execute() below.
 					String forecastHourlyXML;
 					if (theForecast.latitude != 0 || theForecast.longitude != 0){ // Don't get hourly data if location not set.
 						Log.i(DEBUG_TAG, "Latitude is: " + theForecast.latitude + " Longitude is: " + theForecast.longitude);
 						forecastHourlyXML = getHourlyDetailsXMLPage(theForecast.latitude, theForecast.longitude);
 						parseHourlyData(forecastHourlyXML, theForecast); // Parse the hourly data from the XML file and place it into theForecast data structures.
-					}			
+					}
 					return "";
 				}
 			}.execute(theForecast);
 		}else{
 			if (log_level > 0) {Log.i(DEBUG_TAG, "Skipped HourlyXMLData update due to \"hourlyDataUpdating\" being true.");}
 		}
-		
+
 	}
-	
+
 	// Get forecast details for a geographic point.
     String getHourlyDetailsXMLPage(double latitude, double longitude){
 		String pageContent = "";
@@ -597,10 +611,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			String hazard      = "&wwa=wwa";   // Hazards are Watches, Warnings and Advisories.
 			String product     = "&product=time-series"; // "time-series" gives us the detailed 3-hour updates.
 			String submit      = "&Submit=Submit";
-			String queryURL ="http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?whichClient=NDFDgen" + 
+			String queryURL ="http://graphical.weather.gov/xml/SOAP_server/ndfdXMLclient.php?whichClient=NDFDgen" +
 								latString + lonString + units + temperature + windSpeed + windDir + hazard + product + submit;
 	    	if (log_level > 0) {Log.i(DEBUG_TAG, "Query URL for hourly XML is: " + queryURL);}
-			
+
 			// Submit the query to NOAA
 		    URL url       = new URL(queryURL);
 		    URLConnection conn = url.openConnection();
@@ -609,7 +623,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		    String line;
 		    while ((line = in.readLine()) != null) { // Get next line of file
-				pageContent = pageContent + line + "\n"; 
+				pageContent = pageContent + line + "\n";
 		    }
 	    	if (log_level > 0) {Log.i(DEBUG_TAG, "Closing BufferedReader.");}
 		    in.close();
@@ -619,10 +633,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		}
 		return pageContent; // Return the XML.
 	}
-	
+
 	// Parse the data from hourly XML and place into current forecast data structures.
 	void parseHourlyData(String hourlyXMLdata, Forecast currentForecast){
-		
+
 		// Do initial parsing of XML document.
 		Document doc;
 		try{
@@ -644,45 +658,45 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			if (log_level > 0) {Log.i(DEBUG_TAG, "ParserConfigurationException parsing hourly XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
 			return;
 		}
-			
+
 		// Get 3-hour time periods data from XML file.
-		currentForecast.times_3h = getHourlyXMLData ( doc, "time-layout", "k-p3h"); // Get time period values, checking format. 
-		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for time layout. ");}	    
-		
+		currentForecast.times_3h = getHourlyXMLData ( doc, "time-layout", "k-p3h"); // Get time period values, checking format.
+		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for time layout. ");}
+
 		// Get temperature data from XML file.
 		currentForecast.temperatures = getHourlyXMLData ( doc, "temperature", "");
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for hourly temperature. ");}
-		
-		// Get wind speed data from XML file.		
+
+		// Get wind speed data from XML file.
 		currentForecast.wind_speeds  = getHourlyXMLData ( doc, "wind-speed", "");
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for hourly wind speed. ");}
-		
-		// Get wind direction data from XML file.		
+
+		// Get wind direction data from XML file.
 		currentForecast.wind_directions = getHourlyXMLData ( doc, "direction", "");
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for hourly wind direction. ");}
 
 		// Get 1-hour time period data from XML file. Used for hazards.
-		currentForecast.times_1h = getHourlyXMLData ( doc, "time-layout", "k-p1h"); // Get time period values, checking format. 
-		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for time layout. ");}	    
-		
+		currentForecast.times_1h = getHourlyXMLData ( doc, "time-layout", "k-p1h"); // Get time period values, checking format.
+		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for time layout. ");}
+
 		// Get hazard from XML file. This includes: "Watches, Warnings, and Advisories."
 		currentForecast.hazards = getHazardXMLData ( doc, "hazards");
 		if (log_level > 0) {Log.i(DEBUG_TAG, "Got data for hourly temperature. ");}
 	}
-	
+
     // Generic method for getting 3-hourly data from XML file. 
-    ArrayList<String> getHourlyXMLData ( 
+    ArrayList<String> getHourlyXMLData (
     		Document doc,             // doc is theXML preprocessed document.
     		String tag_name,          // tag_name is the tag that the data is stored under in the XML file.
     		String layout_key         // Only used for time-layout. Checks the time format, because multiple time layouts may be present.
-    	){                            // Only requires match to beginning of attribute value. For time values such as "k-p1h" matches k-p1h-n65-2. 
+    	){                            // Only requires match to beginning of attribute value. For time values such as "k-p1h" matches k-p1h-n65-2.
 		// Get data from XML file.
 		ArrayList<String> data = new ArrayList<String>();
 		try{
 		    NodeList dataLayoutList = doc.getElementsByTagName(tag_name);          // Get all elements that are tagged with tag_name. e.g "temperature".
 		    Node     dataTagNode = null;                                           // The node the parent of where all our data is.
 		    if (!layout_key.equals("")){                                           // If a layout_key is specified we have to seek the correct one so we ...
-			    for (int i=0; i<dataLayoutList.getLength(); i++){                  // ... iterate through all the matching tags and check the attributes.  
+			    for (int i=0; i<dataLayoutList.getLength(); i++){                  // ... iterate through all the matching tags and check the attributes.
 			    	Node dataTagNodeTest       = dataLayoutList.item(i);           // Get Node for first <data> tag.
 					NodeList dataTagChildNodes = dataTagNodeTest.getChildNodes();  // Now extract the data from the node.
 					Node     theDataValueNode  = dataTagChildNodes.item(1);        // Get second child node. (Node 0 is "<layout-key>"; 1 is "<k-p1h...>";)
@@ -692,15 +706,15 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 					}
 			    }
 		    }else{
-		    	dataTagNode       = dataLayoutList.item(0);                  // Get Node for first <data> tag, if no layout_key is specified. 
+		    	dataTagNode       = dataLayoutList.item(0);                  // Get Node for first <data> tag, if no layout_key is specified.
 				//if (log_level > 0) {Log.i(DEBUG_TAG, "No layout-key specified. Using first matching tag.");}
 		    }
-		    if (dataTagNode == null) {throw new Exception();} 
+		    if (dataTagNode == null) {throw new Exception();}
 			NodeList dataTagChildNodes = dataTagNode.getChildNodes();        // Now extract the data from the node.
 			int end = dataTagChildNodes.getLength();
 			for (int i=3; i<end; i += 2){ // Get data starting with the fourth child node. (Node 0 is "<name>"; 1 is e.g "Wind Speed"; Node 2 is "<value>"; Node 3 is the data.)
-				Node     theDataValueNode  = dataTagChildNodes.item(i);          
-				NodeList theDataNodeList   = theDataValueNode.getChildNodes();   // This node list just has the one item ... 
+				Node     theDataValueNode  = dataTagChildNodes.item(i);
+				NodeList theDataNodeList   = theDataValueNode.getChildNodes();   // This node list just has the one item ...
 				Node     theDataNode       = theDataNodeList.item(0);            // ... which we fetch here ...
 				String   theData           = theDataNode.getNodeValue();         // ... and finally convert to a String.
 	    		data.add(theData);      // Add the data to the list.
@@ -715,15 +729,15 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
     }
 
     // Method for getting hazard data from XML file. 
-    ArrayList<String> getHazardXMLData ( 
+    ArrayList<String> getHazardXMLData (
     		Document doc,             // doc is theXML preprocessed document.
     		String tag_name          // tag_name is the tag that the data is stored under in the XML file.
-    	){                         
+    	){
 		// Get data from XML file.
 		ArrayList<String> data = new ArrayList<String>();
 		try{
 		    NodeList dataLayoutList = doc.getElementsByTagName(tag_name);
-            Node     dataTagNode   = dataLayoutList.item(0);                  // Get Node for first <data> tag, if no layout_key is specified. 
+            Node     dataTagNode   = dataLayoutList.item(0);                  // Get Node for first <data> tag, if no layout_key is specified.
 
 			NodeList dataTagChildNodes = dataTagNode.getChildNodes();        // Now extract the data from the node.
 			int end = dataTagChildNodes.getLength();
@@ -731,13 +745,13 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 				String hazardString = "";
 				Node     theDataValueNode  = dataTagChildNodes.item(i);          // YES
 				//if (log_level > 0) {Log.i(DEBUG_TAG, "i="+i+" theDataValueNode is: " + theDataValueNode);}
-				NodeList theDataNodeList   = theDataValueNode.getChildNodes();  
+				NodeList theDataNodeList   = theDataValueNode.getChildNodes();
 				//if (log_level > 0) {Log.i(DEBUG_TAG, " theDataNodeList is: " + theDataNodeList);}
 				//if (log_level > 0) {Log.i(DEBUG_TAG, " theDataNodeList length is: " + theDataNodeList.getLength());}
 				if (theDataNodeList.getLength() == 3){
 					Node     theDataNode       = theDataNodeList.item(1); // Get the node with the data.
-					//String   theData           = theDataNode.getNodeValue();         
-					//if (log_level > 0) {Log.i(DEBUG_TAG, " data is: " + theData);}		    		
+					//String   theData           = theDataNode.getNodeValue();
+					//if (log_level > 0) {Log.i(DEBUG_TAG, " data is: " + theData);}
 					//if (log_level > 0) {Log.i(DEBUG_TAG, " theDataNode j " +" is : " + theDataNode);}
 					//if (log_level > 0) {Log.i(DEBUG_TAG, " theDataNode j " +" is : " + theDataNode.getNodeName());}  // Node name is "hazard"
 					//if (log_level > 0) {Log.i(DEBUG_TAG, " theDataNode j " +" is : " + theDataNode.getNodeValue());} // Node value is "null"
@@ -783,10 +797,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		return data;
     }
 
-    
+
 	ForecastXMLPage getXMLPage(String theURL, String theLocation){
 		ForecastXMLPage theXMLPage = new ForecastXMLPage();
-		
+
 	    Log.i(DEBUG_TAG, "theURL is: " + theURL);
 	    Log.i(DEBUG_TAG, "theLocation: " + theLocation);
 
@@ -825,17 +839,17 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 		    header2 = conn.getHeaderField(2); // This has the URL we need.
 
 		    String theNextURL = "";
-		    
+
 		    if(header1.startsWith("http://") ){ theNextURL = header1;} // The NOAA web server might return the URL either on header 1 or 2.
 		    if(header2.startsWith("http://") ){ theNextURL = header2;}
-		    
-		    if (theNextURL.equals("")){ 
+
+		    if (theNextURL.equals("")){
 		    	String errorMessage = "Sorry, I couldn't find that location. \n\n The location should be in form of: \n\n City, State or a valid 5-digit zip code. \n\n US locations only.";
-		    	pageContent = "Error: Unknown location"; 
-		    	toastErrorMessage =  errorMessage; 
+		    	pageContent = "Error: Unknown location";
+		    	toastErrorMessage =  errorMessage;
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "Could not find URL in either header 1 or 2.");}
 		    } else {
-		    	
+
 		    	if (theNextURL.contains("zone")){
 		    		theXMLPage.isZone = true;
 		    	} else {
@@ -848,7 +862,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 				    	if (lonIndex == -1) {lonIndex = theNextURL.indexOf("&textField2="); lonLength = 12;}
 				    	int endIndex = theNextURL.indexOf("&", lonIndex+lonLength );    // End of longitude string at at start of next item in URL ...
 				    	if (endIndex == -1) { endIndex = theNextURL.length();}  // ... unless there are no more items in the URL.
-				    	
+
 				    	String latString = theNextURL.substring(latIndex+latLength, lonIndex); // Get the latitude  string, ignoring the 5 characters of "&lat="
 				    	String lonString = theNextURL.substring(lonIndex+lonLength, endIndex); // Get the longitude string, ignoring the 5 characters of "&lon="
 				    	theXMLPage.latitude  = Double.valueOf(latString);
@@ -861,10 +875,10 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			    // Ask for the XML forecast.
 		    	theNextURL = theNextURL + "&FcstType=dwml"; // DWML is "Digital Weather Markup Language," a type of XML.
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "URL is: " + theNextURL);}
-			    URL url_2 = new URL(theNextURL);         
+			    URL url_2 = new URL(theNextURL);
 			    URLConnection conn_2 = url_2.openConnection();
 			    conn_2.setDoInput(true);
-			    conn_2.setDoOutput(false); 
+			    conn_2.setDoOutput(false);
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "Creating BufferedReader");}
 			    BufferedReader in = new BufferedReader(new InputStreamReader(conn_2.getInputStream()));
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "Created BufferedReader");}
@@ -873,7 +887,7 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 					pageContent = pageContent + line + "\n";
 			    	if (log_level > 0) {Log.i(DEBUG_TAG, line);}
 			    }
-			    
+
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "Closing BufferedReader.");}
 			    in.close();
 		    	if (log_level > 0) {Log.i(DEBUG_TAG, "BufferedReader closed.");}
@@ -893,277 +907,301 @@ public class SimplyWeather extends Activity implements android.view.View.OnClick
 			return theXMLPage;
 		}
 
-		theXMLPage.forecastXML = pageContent; 
+		theXMLPage.forecastXML = pageContent;
 		theXMLPage.hasError    = false;
 		return theXMLPage;
 	}
-	
-	// Parse the XML document and return an HTML page. 
-    ForecastHTMLPage parsePage(String pageContent, String theLocation){
-		
-		ForecastHTMLPage forecast = new ForecastHTMLPage();
+
+	// Parse the XML document and return an HTML page.
+    void parsePage(String forecastXML, ForecastHTMLPage forecast){
+
 		forecast.forecastText = "";
 		forecast.errorText    = "";
-		forecast.hasError     = true; 
+		forecast.hasError     = true;
 
 		String displayText  = ""; // Text to present to the user.
 		int forecastPeriods;      // Number of time periods (e.g. "This evening", "Tomorrow morning", ...) in the forecast.
 		String[] forecastTexts;   // Text of forecast for each period.
 		String[] forecastTitles;  // Title for each period. ("This evening" ...)
-		String errorMessage = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
-		if (pageContent.startsWith("<!doctype html public \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>")){
-			forecast.errorText = pageContent;
-			return(forecast);
+		if (forecastXML.startsWith("<!doctype html public \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>")){
+			forecast.errorText = forecastXML;
+			return;
 		}
-		if (!pageContent.startsWith("<?xml")){
+		if (!forecastXML.startsWith("<?xml")){
 			Log.i(DEBUG_TAG, "Page appears not to be XML. Page content is: ");
-			Log.i(DEBUG_TAG, pageContent);
-			forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>"; 
-			return(forecast);
+			Log.i(DEBUG_TAG, forecastXML);
+			forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
+			return;
 		}
 
-		try{
-			Document doc;
-			try{
-			    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		        InputSource inputSource = new InputSource();
-		        inputSource.setCharacterStream(new StringReader(pageContent));
-			    doc = dBuilder.parse(inputSource);
-			} catch (IOException e){
-				if (log_level > 0) {Log.i(DEBUG_TAG, "IOException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-				return(forecast);
-			} catch (SAXException e){
-				if (log_level > 0) {Log.i(DEBUG_TAG, "SAXException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-				return(forecast);
-			} catch (IllegalArgumentException e){
-				if (log_level > 0) {Log.i(DEBUG_TAG, "IllegalArgumentException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-				return(forecast);
-			}
-			
-		    // Get the text of the forecasts
-			try {
-			    NodeList wordedForecastList = doc.getElementsByTagName("wordedForecast");
-		    	Node nNode = wordedForecastList.item(0);
-		    	NodeList childNodes = nNode.getChildNodes();
-		    	forecastPeriods = childNodes.getLength() - 2;
-		    	forecastTexts  = new String[forecastPeriods];
-		    	forecastTitles = new String[forecastPeriods];
-			    for (int i = 2; i < childNodes.getLength(); i++) { // Skip element 1 which is just a title. (WARNING: This parsing is brittle and depends on NWS preserving ordering which is not guaranteed.)
-			    	if(childNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
-			    		Element line = (Element) childNodes.item(i);
-			    		NodeList gChildNodes = line.getChildNodes();
-			    		forecastTexts[i-2] = gChildNodes.item(0).getNodeValue(); // Add the forecast text for a time period to the array.
-			    	}
-			    }
-			}catch(Exception e){
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #2: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-				forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
-				return(forecast);
+        Document doc;
+        try{
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            InputSource inputSource = new InputSource();
+            inputSource.setCharacterStream(new StringReader(forecastXML));
+            doc = dBuilder.parse(inputSource);
+        } catch (IOException e){
+            if (log_level > 0) {Log.i(DEBUG_TAG, "IOException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            return;
+        } catch (SAXException e){
+            if (log_level > 0) {Log.i(DEBUG_TAG, "SAXException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            return;
+        } catch (IllegalArgumentException e){
+            if (log_level > 0) {Log.i(DEBUG_TAG, "IllegalArgumentException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            return;
+        } catch (ParserConfigurationException e) {
+            if (log_level > 0) {Log.i(DEBUG_TAG, "ParserConfigurationException parsing XML page #1: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            return;
+        }
 
-			}
-
-			try{
-			    // Find the titles for the time periods
-			    NodeList timeLayoutList = doc.getElementsByTagName("time-layout");
-			    Element layoutKey;
-			    for (int x=0; x<timeLayoutList.getLength(); x++){
-			    	Node timeLayoutNode = timeLayoutList.item(x); 
-			    	NodeList timeLayoutItems = timeLayoutNode.getChildNodes();
-		    		layoutKey = (Element) timeLayoutItems.item(1); // First item should be "layout-key"
-			    	if (layoutKey.getChildNodes().item(0).getNodeValue().startsWith("k-p12h")) { // can be ...-n13-1 or ...-n14-1
-					    for (int i = 3; i < timeLayoutItems.getLength(); i=i+2) { // Skip first item, which is "layout-key".
-					    	if(timeLayoutItems.item(i).getNodeType() == Node.ELEMENT_NODE){
-					    		Element line = (Element) timeLayoutItems.item(i);
-					    		forecastTitles[i-2] = line.getAttribute("period-name");
-					    	}
-					    }		    		
-			    	}
-			    }
-			} catch (Exception e){
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #3: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-				forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
-				return(forecast);
-			}
-		    
-			// Get current conditions. These all should fail gently, with current conditions not displayed if they are not available.
-			
-		    // Get current temperature.
-		    String   theTemperature;
-		    try{
-			    NodeList temperatureNodeList = doc.getElementsByTagName("temperature");
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Got  \"temperature\" node list");}
-				Log.i(DEBUG_TAG, "currentObservationsNodeList.getLength() = " +temperatureNodeList.getLength());
-				Node     temperatureTagNode       = temperatureNodeList.item(2);             // Get Node for third <temperature> tag.  
-				NodeList temperatureTagChildNodes = temperatureTagNode.getChildNodes();      // Now extract the temperature from the node.
-				Node     theTemperatureValueNode  = temperatureTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the temperature Node; ...)
-				NodeList theTemperatureNodeList   = theTemperatureValueNode.getChildNodes(); // This node list just has the one item ... 
-				Node     theTemperatureNode       = theTemperatureNodeList.item(0);          // ... which we fetch here ...
-				         theTemperature           = theTemperatureNode.getNodeValue();       // ... and finally convert to a String.
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Got actual temperature. "+ theTemperature);}
-		    } catch (Exception e){
-		    	theTemperature = "";
-		    }
-
-		    // Get current humidity.
-			String   theHumidity;
-			try{
-			    NodeList humidityNodeList      = doc.getElementsByTagName("humidity");
-				Node     humidityTagNode       = humidityNodeList.item(0);             // Get Node for first <humidity> tag.  
-			    NodeList humidityTagChildNodes = humidityTagNode.getChildNodes();      // Now extract the humidity from the node.
-				Node     theHumidityValueNode  = humidityTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the humidity Node; ...)
-				NodeList theHumidityNodeList   = theHumidityValueNode.getChildNodes(); // This node list just has the one item ... 
-				Node     theHumidityNode       = theHumidityNodeList.item(0);          // ... which we fetch here ...
-				         theHumidity           = theHumidityNode.getNodeValue();       // ... and finally convert to a String.
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Got actual humidity. "+ theHumidity);}
-			}
-			catch(Exception e){
-				theHumidity = "";
-			}
-			
-		    // Get current wind speed. (In knots!)
-			double theWindSpeed;
-			try {
-			    NodeList windSpeedNodeList      = doc.getElementsByTagName("wind-speed");
-				Node     windSpeedTagNode       = windSpeedNodeList.item(1);                    // Get Node for second <wind-speed> tag. (First is gust, second is sustained.)  
-			    NodeList windSpeedTagChildNodes = windSpeedTagNode.getChildNodes();             // Now extract the wind-speed from the node.
-				Node     theWindSpeedValueNode  = windSpeedTagChildNodes.item(1);               // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-speed Node; ...)
-				NodeList theWindSpeedNodeList   = theWindSpeedValueNode.getChildNodes();        // This node list just has the one item ... 
-				Node     theWindSpeedNode       = theWindSpeedNodeList.item(0);                 // ... which we fetch here ...
-				theWindSpeed = Double.valueOf(theWindSpeedNode.getNodeValue());                 // ... and finally convert to a String.
-				theWindSpeed = Math.round(theWindSpeed *1.15077945);                            // Convert from knots to mph.
-			}catch (NumberFormatException e){
-				theWindSpeed = -1; // Sometimes the wind speed is "NA" and this appears to be different than zero, since nearby locations have substantial wind speed. -1 flags unknown value. 
-			}
-			if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind speed. "+ theWindSpeed);}
-			
-		    // Get current wind gust. (In knots!)
-			double   theWindGust;
-			try{
-			    NodeList windGustNodeList      = doc.getElementsByTagName("wind-speed");
-				Node     windGustTagNode       = windGustNodeList.item(0);                   // Get Node for first <wind-speed> tag. (This is gust, second is sustained.)  
-			    NodeList windGustTagChildNodes = windGustTagNode.getChildNodes();            // Now extract the wind-Gust from the node.
-				Node     theWindGustValueNode  = windGustTagChildNodes.item(1);              // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-Gust Node; ...)
-				NodeList theWindGustNodeList   = theWindGustValueNode.getChildNodes();       // This node list just has the one item ... 
-				Node     theWindGustNode       = theWindGustNodeList.item(0);                // ... which we fetch here ...
-				theWindGust = Double.valueOf(theWindGustNode.getNodeValue());                // ... and finally convert to a String. (Throws NumberFormatException)
-				theWindGust = Math.round(theWindGust*1.15077945);                            // Convert from knots to mph.
-			} catch (Exception e){
-				theWindGust =0; // Zero flags an unknown value and will not be displayed.
-			}
-			if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind gust. "+ theWindGust);}
-
-		    // Get wind direction. (Degrees.)
-			String   theWindDirection;
-			try {
-			    NodeList windDirectionNodeList      = doc.getElementsByTagName("direction");
-				Node     windDirectionTagNode       = windDirectionNodeList.item(0);             // Get Node for first <wind-Direction> tag.  
-			    NodeList windDirectionTagChildNodes = windDirectionTagNode.getChildNodes();      // Now extract the wind-Direction from the node.
-				Node     theWindDirectionValueNode  = windDirectionTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-Direction Node; ...)
-				NodeList theWindDirectionNodeList   = theWindDirectionValueNode.getChildNodes(); // This node list just has the one item ... 
-				Node     theWindDirectionNode       = theWindDirectionNodeList.item(0);          // ... which we fetch here ...
-				String   theWindDirectionDegrees    = theWindDirectionNode.getNodeValue();       // ... and finally convert to a String.
-				theWindDirection                    = Forecast.getWindDirection(theWindDirectionDegrees); 
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind direction. "+ theWindDirection + " = " + theWindDirectionDegrees);}
-			} catch (Exception e){
-				theWindDirection = ""; 
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Failed to get wind direction.");}
-			}
-
-			// Get the icon for the current conditions.
-			String   theConditionsIconURL;
-			try {
-			    NodeList conditionsIconNodeList      = doc.getElementsByTagName("conditions-icon");
-				Node     conditionsIconTagNode       = conditionsIconNodeList.item(1);             // Get Node for second <conditions-icon> tag.  
-			    NodeList conditionsIconTagChildNodes = conditionsIconTagNode.getChildNodes();      // Now extract the icon from the node.
-				Node     theConditionsIconValueNode  = conditionsIconTagChildNodes.item(3);        // Get fourth child node. (Skip the pair for "<name>Conditions Icon</name>" and  the one for the "<icon-link tag>") 
-				NodeList theConditionsIconNodeList   = theConditionsIconValueNode.getChildNodes(); // This node list just has the one item ... 
-				Node     theConditionsIconNode       = theConditionsIconNodeList.item(0);          // ... which we fetch here ...
-				         theConditionsIconURL        = theConditionsIconNode.getNodeValue();       // ... and finally convert to a String.
-			if (log_level > 0) {Log.i(DEBUG_TAG, "Got conditions icon URL. "+ theConditionsIconURL);}
-			} catch (Exception e){
-				theConditionsIconURL = ""; // Just skip the icon if we can't get it.
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Failed to get conditions icon.");}
-			}
-			if (theConditionsIconURL.equals("http://forecast.weather.gov/images/wtf/NULL")){ // This value is used if no local conditions are set.
-				theConditionsIconURL = ""; // Display nothing.
-			}
-
-			// Get the icon for the current conditions.
-		    ArrayList<String>  theConditionIconURLs  = new  ArrayList<String>();
-			try{
-			    NodeList conditionsIconsNodeList      = doc.getElementsByTagName("conditions-icon");
-				Node     conditionsIconsTagNode       = conditionsIconsNodeList.item(0);             // Get Node for first <conditions-icon> tag.  
-			    NodeList conditionsIconsTagChildNodes = conditionsIconsTagNode.getChildNodes();      // Now extract the temperature from the node.
-			    if (log_level > 0) {Log.i(DEBUG_TAG, "conditionsIconsTagChildNodes.getLength() " + conditionsIconsTagChildNodes.getLength());} // 31, but only 14 icon links.
-			    for (int iconIndex = 3; iconIndex < conditionsIconsTagChildNodes.getLength(); iconIndex +=2){
-					Node     theConditionsIconsValueNode  = conditionsIconsTagChildNodes.item(iconIndex); // Get child node. Node counting: I think the <tag> counts as one as does the <>value</> between the tags, so we get every other and skip the initial pair for "<name>Conditions Icon</name>"  
-					NodeList theConditionsIconsNodeList   = theConditionsIconsValueNode.getChildNodes();  // This node list just has the one item ... 
-					Node     theConditionsIconsNode       = theConditionsIconsNodeList.item(0);           // ... which we fetch here ...
-					String   theConditionsIconsURL        = theConditionsIconsNode.getNodeValue();        // ... and finally convert to a String.
-					//if (log_level > 0) {Log.i(DEBUG_TAG, "Got conditions icon URL. "+ theConditionsIconsURL);}
-					theConditionIconURLs.add(theConditionsIconsURL);
-			    }
-			}catch(Exception e){
-				for (int i=0; i<forecastPeriods; i++){theConditionIconURLs.add("");} // Pad out the array with empty strings so the HTML is generated without errors.
-			}
-			
-			// Get latitude and longitude.
-/*			double latitude  = 0;
-			double longitude = 0;
-			try{
-			    NodeList pointNodeList      = doc.getElementsByTagName("point" );
-				Node     pointTagNode       = pointNodeList.item(0);             // Get Node for first <latitude> tag.  
-				if (log_level > 0) {Log.i(DEBUG_TAG, "Point name is: " + pointTagNode.getNodeName() + " Point value is: " + pointTagNode.getNodeValue()) ;}
-				
-			}catch(Exception e){
-				latitude  = 0;
-				longitude = 0;
-			}
-	*/		
-			// Build up the HTML to display to user.
-		    
-		    // Start with current conditions.
-            // Check for presence of local conditions. Zero wind speed is default if no value set. -1 Wind speed mean no value set.
-		    if (!(theWindSpeed < 0 && (theTemperature.equals("0")) || theTemperature.equals("") || theTemperature.equals("NA") )  ){
-			    String currentObservations = "<font color=\"blue\"><b>Current Conditions</b></font> <br>";
-		    	displayText = displayText + "<img src=\"" + theConditionsIconURL + "\""  +   " align=\"right\" >  "; // Note: Align right is deprecated, but still supported. (Replaced with styles.)
-		    	displayText = displayText + currentObservations +"<b>Temperature: " + theTemperature + "&deg;F</b><br> ";
-		    	if (theWindSpeed >= 0){ // Sanity check. (-1 signals non-numeric or missing value. "NA" has been seen in forecast XML when local conditions aren't given. (San Francisco))
-		    		displayText = displayText + "<b>Wind:</b> ";
-		    		if (!theWindDirection.equals("")) {displayText = displayText + theWindDirection + " at ";} 
-		    		displayText = displayText + (int)theWindSpeed + " mph";
-		    	}
-		    	if (theWindGust > 1) {	 // "0" often appears as gust speed even when wind speed is non-zero.
-                    displayText = displayText +", gusting to " + (int)theWindGust  + " mph";
+    // Get the text of the forecasts
+        try {
+            NodeList wordedForecastList = doc.getElementsByTagName("wordedForecast");
+            Node nNode = wordedForecastList.item(0);
+            NodeList childNodes = nNode.getChildNodes();
+            forecastPeriods = childNodes.getLength() - 2;
+            forecastTexts  = new String[forecastPeriods];
+            forecastTitles = new String[forecastPeriods];
+            for (int i = 2; i < childNodes.getLength(); i++) { // Skip element 1 which is just a title. (WARNING: This parsing is brittle and depends on NWS preserving ordering which is not guaranteed.)
+                if(childNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
+                    Element line = (Element) childNodes.item(i);
+                    NodeList gChildNodes = line.getChildNodes();
+                    forecastTexts[i-2] = gChildNodes.item(0).getNodeValue(); // Add the forecast text for a time period to the array.
                 }
-                displayText = displayText + "<br><b>Humidity:</b> " + theHumidity + "&#37;<br><br><br><br><br>";
-		    }
-	    	
-	    	// Now build HTML for forecast.
-		    for (int i =1; i<forecastPeriods; i=i+2){ // Hack: I'm recording in every other slot because tag and value each get a slot.
-		    	displayText = displayText + "<img src=\"" + theConditionIconURLs.get((i-1)/2) + "\""  +   " align=\"right\" >  ";
-		    	displayText += "<font color=\"blue\"><b>" + forecastTitles[i] + "</b></font><br>";
-		    	displayText += "     " +  forecastTexts[i]  + "<br><br><br><br>";
-		    }
-			displayText = displayText.replaceAll("%", "%25");
-		       //displayText = displayText.replaceAll("#", "%23").replaceAll("\\","%27").replaceAll("?","%3f");
-			
-		}catch(Exception e){
-			toastErrorMessage += "Sorry, cannot get forecast for this location.\n\n ";
-			
-			if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #4: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
-			
-			errorMessage +=  " <br><br> An error has been encountered loading your forecast." +
-					" A summary of the error is being sent to the developer of SimplyWeather so I can fix this issue in a future release."; // Show whatever error message has been passed up.
-			sendErrorToJon("Page content is: " + pageContent, theLocation);
-			forecast.errorText = errorMessage;
-			return(forecast);
-		}
-		forecast.forecastText = displayText;
+            }
+        }catch(Exception e){
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #2: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
+            return;
+
+        }
+
+        try{
+            // Find the titles for the time periods
+            NodeList timeLayoutList = doc.getElementsByTagName("time-layout");
+            Element layoutKey;
+            for (int x=0; x<timeLayoutList.getLength(); x++){
+                Node timeLayoutNode = timeLayoutList.item(x);
+                NodeList timeLayoutItems = timeLayoutNode.getChildNodes();
+                layoutKey = (Element) timeLayoutItems.item(1); // First item should be "layout-key"
+                if (layoutKey.getChildNodes().item(0).getNodeValue().startsWith("k-p12h")) { // can be ...-n13-1 or ...-n14-1
+                    for (int i = 3; i < timeLayoutItems.getLength(); i=i+2) { // Skip first item, which is "layout-key".
+                        if(timeLayoutItems.item(i).getNodeType() == Node.ELEMENT_NODE){
+                            Element line = (Element) timeLayoutItems.item(i);
+                            forecastTitles[i-2] = line.getAttribute("period-name");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e){
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Exception parsing XML page #3: "+ e.getMessage() + "<p>Cause is:" +  e.getCause()+"<p>Stack trace"+ Arrays.toString(e.getStackTrace()));}
+            forecast.errorText = "<br><br>Could not load forecast for this location. Please try again later.<br><br><br><br><br>";
+            return;
+        }
+
+        // Get current conditions. These all should fail gently, with current conditions not displayed if they are not available.
+        String theTemperature   = getTemperature(doc);
+        String theHumidity      = getHumidity(doc);
+        double theWindSpeed     = getWindSpeed(doc);     // Get current wind speed. (Converted from knots to mph.)
+        double theWindGust      = getWindGust(doc);      // Get current wind gust.  (Converted from knots to mph.)
+        String theWindDirection = getWindDirection(doc); // Get wind direction. (Degrees.)
+
+
+        // Get the icon for the current conditions.
+        String theConditionsIconURL = getIconURL( doc);
+
+        // Get the icon for the current conditions.
+        ArrayList<String>  theConditionIconURLs = getIconURLsList(doc, forecastPeriods);
+
+        // Get latitude and longitude.
+/*			double latitude  = 0;
+        double longitude = 0;
+        try{
+            NodeList pointNodeList      = doc.getElementsByTagName("point" );
+            Node     pointTagNode       = pointNodeList.item(0);             // Get Node for first <latitude> tag.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Point name is: " + pointTagNode.getNodeName() + " Point value is: " + pointTagNode.getNodeValue()) ;}
+
+        }catch(Exception e){
+            latitude  = 0;
+            longitude = 0;
+        }
+*/
+        // Build up the HTML to display to user.
+
+        // Start with current conditions.
+        // Check for presence of local conditions. Zero wind speed is default if no value set. -1 Wind speed mean no value set.
+        if (!(theWindSpeed < 0 && (theTemperature.equals("0")) || theTemperature.equals("") || theTemperature.equals("NA") )  ){
+            String currentObservations = "<font color=\"blue\"><b>Current Conditions</b></font> <br>";
+            displayText = displayText + "<img src=\"" + theConditionsIconURL + "\""  +   " align=\"right\" >  "; // Note: Align right is deprecated, but still supported. (Replaced with styles.)
+            displayText = displayText + currentObservations +"<b>Temperature: " + theTemperature + "&deg;F</b><br> ";
+            if (theWindSpeed >= 0){ // Sanity check. (-1 signals non-numeric or missing value. "NA" has been seen in forecast XML when local conditions aren't given. (San Francisco))
+                displayText = displayText + "<b>Wind:</b> ";
+                if (!theWindDirection.equals("")) {displayText = displayText + theWindDirection + " at ";}
+                displayText = displayText + (int)theWindSpeed + " mph";
+            }
+            if (theWindGust > 1) {	 // "0" often appears as gust speed even when wind speed is non-zero.
+                displayText = displayText +", gusting to " + (int)theWindGust  + " mph";
+            }
+            displayText = displayText + "<br><b>Humidity:</b> " + theHumidity + "&#37;<br><br><br><br><br>";
+        }
+
+        // Now build HTML for forecast.
+        for (int i =1; i<forecastPeriods; i=i+2){ // Hack: I'm recording in every other slot because tag and value each get a slot.
+            displayText = displayText + "<img src=\"" + theConditionIconURLs.get((i-1)/2) + "\""  +   " align=\"right\" >  ";
+            displayText += "<font color=\"blue\"><b>" + forecastTitles[i] + "</b></font><br>";
+            displayText += "     " +  forecastTexts[i]  + "<br><br><br><br>";
+        }
+        displayText = displayText.replaceAll("%", "%25");
+           //displayText = displayText.replaceAll("#", "%23").replaceAll("\\","%27").replaceAll("?","%3f");
+
+        forecast.forecastText = displayText;
 		forecast.hasError = false;
-		return( forecast);
 	}
+
+    String getTemperature(Document doc) {
+        // Get current temperature.
+        String theTemperature;
+        try {
+            NodeList temperatureNodeList = doc.getElementsByTagName("temperature");
+            if (log_level > 0) {
+                Log.i(DEBUG_TAG, "Got  \"temperature\" node list");
+            }
+            Log.i(DEBUG_TAG, "currentObservationsNodeList.getLength() = " + temperatureNodeList.getLength());
+            Node temperatureTagNode = temperatureNodeList.item(2);             // Get Node for third <temperature> tag.
+            NodeList temperatureTagChildNodes = temperatureTagNode.getChildNodes();      // Now extract the temperature from the node.
+            Node theTemperatureValueNode = temperatureTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the temperature Node; ...)
+            NodeList theTemperatureNodeList = theTemperatureValueNode.getChildNodes(); // This node list just has the one item ...
+            Node theTemperatureNode = theTemperatureNodeList.item(0);          // ... which we fetch here ...
+            theTemperature = theTemperatureNode.getNodeValue();       // ... and finally convert to a String.
+            if (log_level > 0) {
+                Log.i(DEBUG_TAG, "Got actual temperature. " + theTemperature);
+            }
+        } catch (Exception e) {
+            theTemperature = "";
+        }
+        return theTemperature;
+    }
+
+    String getHumidity(Document doc) {
+        String theHumidity;
+        try {
+            NodeList humidityNodeList = doc.getElementsByTagName("humidity");
+            Node humidityTagNode = humidityNodeList.item(0);             // Get Node for first <humidity> tag.
+            NodeList humidityTagChildNodes = humidityTagNode.getChildNodes();      // Now extract the humidity from the node.
+            Node theHumidityValueNode = humidityTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the humidity Node; ...)
+            NodeList theHumidityNodeList = theHumidityValueNode.getChildNodes(); // This node list just has the one item ...
+            Node theHumidityNode = theHumidityNodeList.item(0);          // ... which we fetch here ...
+            theHumidity = theHumidityNode.getNodeValue();       // ... and finally convert to a String.
+            if (log_level > 0) {
+                Log.i(DEBUG_TAG, "Got actual humidity. " + theHumidity);
+            }
+        }
+        catch(Exception e){
+            theHumidity = "";
+        }
+        return theHumidity;
+    }
+
+    double getWindSpeed(Document doc){
+        double theWindSpeed;
+        try {
+            NodeList windSpeedNodeList = doc.getElementsByTagName("wind-speed");
+            Node windSpeedTagNode = windSpeedNodeList.item(1);                    // Get Node for second <wind-speed> tag. (First is gust, second is sustained.)
+            NodeList windSpeedTagChildNodes = windSpeedTagNode.getChildNodes();             // Now extract the wind-speed from the node.
+            Node theWindSpeedValueNode = windSpeedTagChildNodes.item(1);               // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-speed Node; ...)
+            NodeList theWindSpeedNodeList = theWindSpeedValueNode.getChildNodes();        // This node list just has the one item ...
+            Node theWindSpeedNode = theWindSpeedNodeList.item(0);                 // ... which we fetch here ...
+            theWindSpeed = Double.valueOf(theWindSpeedNode.getNodeValue());                 // ... and finally convert to a String.
+            theWindSpeed = Math.round(theWindSpeed * 1.15077945);                            // Convert from knots to mph.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind speed. "+ theWindSpeed);}
+        }
+        catch (NumberFormatException e){
+            theWindSpeed = -1; // Sometimes the wind speed is "NA" and this appears to be different than zero, since nearby locations have substantial wind speed. -1 flags unknown value.
+        }
+        return theWindSpeed;
+    }
+
+    double getWindGust(Document doc){
+        double theWindGust;
+        try {
+            NodeList windGustNodeList = doc.getElementsByTagName("wind-speed");
+            Node windGustTagNode = windGustNodeList.item(0);                   // Get Node for first <wind-speed> tag. (This is gust, second is sustained.)
+            NodeList windGustTagChildNodes = windGustTagNode.getChildNodes();            // Now extract the wind-Gust from the node.
+            Node theWindGustValueNode = windGustTagChildNodes.item(1);              // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-Gust Node; ...)
+            NodeList theWindGustNodeList = theWindGustValueNode.getChildNodes();       // This node list just has the one item ...
+            Node theWindGustNode = theWindGustNodeList.item(0);                // ... which we fetch here ...
+            theWindGust = Double.valueOf(theWindGustNode.getNodeValue());                // ... and finally convert to a String. (Throws NumberFormatException)
+            theWindGust = Math.round(theWindGust * 1.15077945);                            // Convert from knots to mph.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind gust. "+ theWindGust);}
+        }
+        catch (Exception e){
+            theWindGust = 0; // Zero flags an unknown value and will not be displayed.
+        }
+        return theWindGust;
+    }
+
+    String getWindDirection (Document doc){
+        String theWindDirection;
+        try {
+            NodeList windDirectionNodeList = doc.getElementsByTagName("direction");
+            Node windDirectionTagNode = windDirectionNodeList.item(0);             // Get Node for first <wind-Direction> tag.
+            NodeList windDirectionTagChildNodes = windDirectionTagNode.getChildNodes();      // Now extract the wind-Direction from the node.
+            Node theWindDirectionValueNode = windDirectionTagChildNodes.item(1);        // Get second child node. (Node 0 is "<value>"; Node 1 is the wind-Direction Node; ...)
+            NodeList theWindDirectionNodeList = theWindDirectionValueNode.getChildNodes(); // This node list just has the one item ...
+            Node theWindDirectionNode = theWindDirectionNodeList.item(0);          // ... which we fetch here ...
+            String theWindDirectionDegrees = theWindDirectionNode.getNodeValue();       // ... and finally convert to a String.
+            theWindDirection = Forecast.getWindDirection(theWindDirectionDegrees);
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Got wind direction. "+ theWindDirection);}
+        }
+        catch (Exception e){
+            theWindDirection = "";
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Failed to get wind direction.");}
+        }
+        return theWindDirection;
+    }
+
+    String getIconURL(Document doc){
+        String   theConditionsIconURL;
+        try {
+            NodeList conditionsIconNodeList      = doc.getElementsByTagName("conditions-icon");
+            Node     conditionsIconTagNode       = conditionsIconNodeList.item(1);             // Get Node for second <conditions-icon> tag.
+            NodeList conditionsIconTagChildNodes = conditionsIconTagNode.getChildNodes();      // Now extract the icon from the node.
+            Node     theConditionsIconValueNode  = conditionsIconTagChildNodes.item(3);        // Get fourth child node. (Skip the pair for "<name>Conditions Icon</name>" and  the one for the "<icon-link tag>")
+            NodeList theConditionsIconNodeList   = theConditionsIconValueNode.getChildNodes(); // This node list just has the one item ...
+            Node     theConditionsIconNode       = theConditionsIconNodeList.item(0);          // ... which we fetch here ...
+            theConditionsIconURL        = theConditionsIconNode.getNodeValue();       // ... and finally convert to a String.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Got conditions icon URL. "+ theConditionsIconURL);}
+        } catch (Exception e){
+            theConditionsIconURL = ""; // Just skip the icon if we can't get it.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "Failed to get conditions icon.");}
+        }
+        if (theConditionsIconURL.equals("http://forecast.weather.gov/images/wtf/NULL")){ // This value is used if no local conditions are set.
+            theConditionsIconURL = ""; // Display nothing.
+        }
+        return   theConditionsIconURL;
+    }
+
+    ArrayList<String> getIconURLsList(Document doc, int forecastPeriods){
+        ArrayList<String>  theConditionIconURLs  = new  ArrayList<String>();
+        try{
+            NodeList conditionsIconsNodeList      = doc.getElementsByTagName("conditions-icon");
+            Node     conditionsIconsTagNode       = conditionsIconsNodeList.item(0);             // Get Node for first <conditions-icon> tag.
+            NodeList conditionsIconsTagChildNodes = conditionsIconsTagNode.getChildNodes();      // Now extract the temperature from the node.
+            if (log_level > 0) {Log.i(DEBUG_TAG, "conditionsIconsTagChildNodes.getLength() " + conditionsIconsTagChildNodes.getLength());} // 31, but only 14 icon links.
+            for (int iconIndex = 3; iconIndex < conditionsIconsTagChildNodes.getLength(); iconIndex +=2){
+                Node     theConditionsIconsValueNode  = conditionsIconsTagChildNodes.item(iconIndex); // Get child node. Node counting: I think the <tag> counts as one as does the <>value</> between the tags, so we get every other and skip the initial pair for "<name>Conditions Icon</name>"
+                NodeList theConditionsIconsNodeList   = theConditionsIconsValueNode.getChildNodes();  // This node list just has the one item ...
+                Node     theConditionsIconsNode       = theConditionsIconsNodeList.item(0);           // ... which we fetch here ...
+                String   theConditionsIconsURL        = theConditionsIconsNode.getNodeValue();        // ... and finally convert to a String.
+                //if (log_level > 0) {Log.i(DEBUG_TAG, "Got conditions icon URL. "+ theConditionsIconsURL);}
+                theConditionIconURLs.add(theConditionsIconsURL);
+            }
+        }catch(Exception e){
+            for (int i=0; i<forecastPeriods; i++){theConditionIconURLs.add("");} // Pad out the array with empty strings so the HTML is generated without errors.
+        }
+        return theConditionIconURLs;
+    }
 	
 	long timeSinceLastForecast(){
 		if (currentForecast.forecastTime == 0) {
